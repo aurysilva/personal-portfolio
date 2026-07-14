@@ -1,5 +1,6 @@
 import {
   Box,
+  Button,
   Container,
   Flex,
   HStack,
@@ -8,51 +9,33 @@ import {
   Spacer,
   Text,
   useColorMode,
-  useColorModeValue,
 } from '@chakra-ui/react'
 import { Link as RouterLink, useLocation } from 'react-router-dom'
-import { useMenu, useSiteInfo, mapMenuUrlToPath } from '@/lib/wordpress'
+import { profile } from '@/data/profile'
+import { scrollToSection } from '@/lib/content'
+import { useSiteInfo } from '@/lib/wordpress'
 
-const fallbackNav = [
-  { label: 'Home', path: '/' },
-  { label: 'Blog', path: '/blog' },
+const navItems = [
+  { label: 'Home', href: '/', section: 'hero' },
+  { label: 'About', href: '/#about', section: 'about' },
+  { label: 'Skills', href: '/#skills', section: 'skills' },
+  { label: 'Portfolio', href: '/portfolio', section: 'portfolio' },
+  { label: 'Blog', href: '/blog' },
+  { label: 'Contact', href: '/#contact', section: 'contact' },
 ]
-
-function ColorModeToggle() {
-  const { colorMode, toggleColorMode } = useColorMode()
-
-  return (
-    <IconButton
-      aria-label="Toggle color mode"
-      onClick={toggleColorMode}
-      variant="ghost"
-      size="sm"
-      icon={<Text>{colorMode === 'light' ? '🌙' : '☀️'}</Text>}
-    />
-  )
-}
 
 export function Header() {
   const location = useLocation()
   const { data: siteInfo } = useSiteInfo()
-  const { data: menuItems } = useMenu('primary')
-  const borderColor = useColorModeValue('gray.200', 'gray.700')
-  const bg = useColorModeValue('white', 'gray.900')
+  const { colorMode, toggleColorMode } = useColorMode()
+  const isHome = location.pathname === '/'
 
-  const navItems =
-    menuItems && menuItems.length > 0
-      ? menuItems
-          .filter((item) => item.parent === 0)
-          .sort((a, b) => a.order - b.order)
-          .map((item) => {
-            const path = mapMenuUrlToPath(item.url)
-            return {
-              label: item.title.rendered,
-              path,
-              external: path.startsWith('http'),
-            }
-          })
-      : fallbackNav.map((item) => ({ ...item, external: false }))
+  const handleNav = (item: (typeof navItems)[number]) => {
+    if (item.section && isHome) {
+      scrollToSection(item.section)
+      return
+    }
+  }
 
   return (
     <Box
@@ -60,98 +43,99 @@ export function Header() {
       position="sticky"
       top={0}
       zIndex="sticky"
-      bg={bg}
+      bg="rgba(7, 11, 20, 0.85)"
+      backdropFilter="blur(12px)"
       borderBottomWidth="1px"
-      borderColor={borderColor}
-      backdropFilter="blur(8px)"
+      borderColor="whiteAlpha.100"
     >
       <Container py={4}>
         <Flex align="center" gap={4}>
           <Link
             as={RouterLink}
             to="/"
-            fontWeight="bold"
+            fontWeight="800"
             fontSize="lg"
-            _hover={{ textDecoration: 'none', color: 'brand.500' }}
+            letterSpacing="-0.02em"
+            _hover={{ textDecoration: 'none', color: 'brand.300' }}
           >
-            {siteInfo?.name ?? 'Portfolio'}
+            {siteInfo?.name ?? profile.name.split(' ')[0]}
+            <Text as="span" color="brand.400">
+              .
+            </Text>
           </Link>
+
           <Spacer />
-          <HStack spacing={1} display={{ base: 'none', md: 'flex' }}>
-            {navItems.map((item) =>
-              item.external ? (
-                <Link
-                  key={item.path}
-                  href={item.path}
-                  px={3}
-                  py={2}
-                  borderRadius="md"
-                  fontWeight="medium"
-                  isExternal
-                >
-                  {item.label}
-                </Link>
-              ) : (
-                <Link
-                  key={item.path}
-                  as={RouterLink}
-                  to={item.path}
-                  px={3}
-                  py={2}
-                  borderRadius="md"
-                  fontWeight="medium"
-                  color={location.pathname === item.path ? 'brand.500' : undefined}
-                  bg={location.pathname === item.path ? 'brand.50' : undefined}
-                  _dark={{
-                    bg: location.pathname === item.path ? 'whiteAlpha.100' : undefined,
-                  }}
-                  _hover={{ textDecoration: 'none', color: 'brand.500' }}
-                >
-                  {item.label}
-                </Link>
-              ),
-            )}
+
+          <HStack spacing={1} display={{ base: 'none', lg: 'flex' }}>
+            {navItems.map((item) => (
+              <Link
+                key={item.label}
+                as={RouterLink}
+                to={item.href}
+                onClick={() => handleNav(item)}
+                px={3}
+                py={2}
+                borderRadius="md"
+                fontSize="sm"
+                fontWeight="medium"
+                color={
+                  location.pathname === item.href ||
+                  (isHome && item.section && location.hash === `#${item.section}`)
+                    ? 'brand.300'
+                    : 'gray.300'
+                }
+                _hover={{ textDecoration: 'none', color: 'brand.300' }}
+              >
+                {item.label}
+              </Link>
+            ))}
           </HStack>
-          <ColorModeToggle />
+
+          <Button
+            as="a"
+            href={`mailto:${profile.email}`}
+            size="sm"
+            display={{ base: 'none', md: 'inline-flex' }}
+            variant="outline"
+            borderColor="brand.500"
+            color="brand.300"
+          >
+            Hire me
+          </Button>
+
+          <IconButton
+            aria-label="Toggle color mode"
+            onClick={toggleColorMode}
+            variant="ghost"
+            size="sm"
+            icon={<Text fontSize="sm">{colorMode === 'dark' ? '☀️' : '🌙'}</Text>}
+          />
         </Flex>
+
         <HStack
           spacing={1}
           pt={3}
-          display={{ base: 'flex', md: 'none' }}
+          display={{ base: 'flex', lg: 'none' }}
           overflowX="auto"
           css={{ '&::-webkit-scrollbar': { display: 'none' } }}
         >
-          {navItems.map((item) =>
-            item.external ? (
-              <Link
-                key={item.path}
-                href={item.path}
-                px={3}
-                py={2}
-                borderRadius="md"
-                fontWeight="medium"
-                whiteSpace="nowrap"
-                isExternal
-              >
-                {item.label}
-              </Link>
-            ) : (
-              <Link
-                key={item.path}
-                as={RouterLink}
-                to={item.path}
-                px={3}
-                py={2}
-                borderRadius="md"
-                fontWeight="medium"
-                whiteSpace="nowrap"
-                color={location.pathname === item.path ? 'brand.500' : undefined}
-                _hover={{ textDecoration: 'none', color: 'brand.500' }}
-              >
-                {item.label}
-              </Link>
-            ),
-          )}
+          {navItems.map((item) => (
+            <Link
+              key={item.label}
+              as={RouterLink}
+              to={item.href}
+              onClick={() => handleNav(item)}
+              px={3}
+              py={2}
+              borderRadius="full"
+              fontSize="sm"
+              whiteSpace="nowrap"
+              bg="surface.700"
+              _hover={{ textDecoration: 'none', color: 'brand.300' }}
+            >
+              {item.label}
+            </Link>
+          ))}
         </HStack>
       </Container>
     </Box>

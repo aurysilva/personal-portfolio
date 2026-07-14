@@ -48,6 +48,17 @@ export interface WpPost extends WpPage {
   tags: number[]
 }
 
+export interface WpTerm {
+  id: number
+  name: string
+  slug: string
+  taxonomy: string
+}
+
+export interface WpPortfolio extends WpPage {
+  wpb_fp_portfolio_cat: number[]
+}
+
 export interface WpMenuItem {
   id: number
   title: { rendered: string }
@@ -70,6 +81,7 @@ export interface FetchOptions {
   page?: number
   perPage?: number
   search?: string
+  category?: number
 }
 
 export class WordPressApiError extends Error {

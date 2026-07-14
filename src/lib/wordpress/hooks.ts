@@ -3,14 +3,19 @@ import type {
   FetchOptions,
   WpMenuItem,
   WpPage,
+  WpPortfolio,
   WpPost,
   WpSiteInfo,
+  WpTerm,
 } from './types'
 import { WordPressApiError } from './types'
 import {
   fetchMenu,
   fetchPageBySlug,
   fetchPages,
+  fetchPortfolio,
+  fetchPortfolioBySlug,
+  fetchPortfolioCategories,
   fetchPostBySlug,
   fetchPosts,
   fetchSiteInfo,
@@ -102,4 +107,22 @@ export function usePost(slug: string | undefined) {
 
 export function useMenu(location = 'primary') {
   return useWordPressQuery<WpMenuItem[]>(() => fetchMenu(location), [location])
+}
+
+export function usePortfolio(options: FetchOptions = {}) {
+  return useWordPressQuery<WpPortfolio[]>(
+    () => fetchPortfolio(options),
+    [options.page, options.perPage, options.search, options.category],
+  )
+}
+
+export function usePortfolioItem(slug: string | undefined) {
+  return useWordPressQuery<WpPortfolio | null>(
+    () => (slug ? fetchPortfolioBySlug(slug) : Promise.resolve(null)),
+    [slug],
+  )
+}
+
+export function usePortfolioCategories() {
+  return useWordPressQuery<WpTerm[]>(() => fetchPortfolioCategories(), [])
 }

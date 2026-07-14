@@ -1,6 +1,7 @@
 import {
   Badge,
   Box,
+  Button,
   Container,
   Heading,
   Image,
@@ -31,7 +32,7 @@ export function PostView() {
 
   if (error) {
     return (
-      <Container>
+      <Container py={12}>
         <ErrorState message={error.message} />
       </Container>
     )
@@ -39,7 +40,7 @@ export function PostView() {
 
   if (!post) {
     return (
-      <Container>
+      <Container py={12}>
         <ErrorState title="Post not found" message="This post does not exist in WordPress." />
       </Container>
     )
@@ -50,10 +51,20 @@ export function PostView() {
   const description = stripHtml(post.excerpt.rendered)
 
   return (
-    <Container maxW="container.md">
-      <PageMeta title={title} description={description} />
+    <Container py={{ base: 8, md: 12 }} maxW="container.md">
+      <PageMeta title={`${title} | Blog`} description={description} />
       <Stack spacing={8}>
         <Stack spacing={4}>
+          <Button
+            as={RouterLink}
+            to="/blog"
+            variant="ghost"
+            alignSelf="flex-start"
+            color="gray.400"
+            size="sm"
+          >
+            ← Back to blog
+          </Button>
           <Badge alignSelf="flex-start" colorScheme="brand">
             {formatDate(post.date)}
           </Badge>
@@ -61,7 +72,7 @@ export function PostView() {
             {title}
           </Heading>
           {description && (
-            <Text fontSize="lg" color="gray.600" _dark={{ color: 'gray.300' }}>
+            <Text fontSize="lg" color="gray.400">
               {description}
             </Text>
           )}
@@ -75,16 +86,20 @@ export function PostView() {
             w="100%"
             maxH="420px"
             objectFit="cover"
+            borderWidth="1px"
+            borderColor="whiteAlpha.100"
           />
         )}
 
-        <Box>
+        <Box
+          p={{ base: 0, md: 2 }}
+          borderRadius="xl"
+          bg="surface.800"
+          borderWidth={{ base: 0, md: '1px' }}
+          borderColor="whiteAlpha.100"
+        >
           <WpContent html={post.content.rendered} />
         </Box>
-
-        <Text fontSize="sm" color="gray.500">
-          <RouterLink to="/blog">← Back to blog</RouterLink>
-        </Text>
       </Stack>
     </Container>
   )

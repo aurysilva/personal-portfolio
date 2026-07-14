@@ -4,39 +4,63 @@ import {
   Link,
   Stack,
   Text,
-  useColorModeValue,
 } from '@chakra-ui/react'
+import { Link as RouterLink } from 'react-router-dom'
+import { profile } from '@/data/profile'
 import { useSiteInfo } from '@/lib/wordpress'
 
 export function Footer() {
   const { data: siteInfo } = useSiteInfo()
-  const borderColor = useColorModeValue('gray.200', 'gray.700')
+  const year = new Date().getFullYear()
 
   return (
     <Box
       as="footer"
       mt="auto"
       borderTopWidth="1px"
-      borderColor={borderColor}
+      borderColor="whiteAlpha.100"
       py={10}
+      bg="surface.900"
     >
       <Container>
-        <Stack spacing={2} align="center" textAlign="center">
-          <Text fontWeight="semibold">{siteInfo?.name ?? 'Personal Portfolio'}</Text>
-          {siteInfo?.description && (
-            <Text color="gray.500" maxW="lg">
-              {siteInfo.description}
+        <Stack
+          direction={{ base: 'column', md: 'row' }}
+          justify="space-between"
+          align={{ base: 'flex-start', md: 'center' }}
+          spacing={6}
+        >
+          <Stack spacing={1}>
+            <Text fontWeight="700">{siteInfo?.name ?? profile.name}</Text>
+            <Text fontSize="sm" color="gray.500">
+              {siteInfo?.description ?? profile.title} · {profile.location}
             </Text>
-          )}
-          <Text fontSize="sm" color="gray.500">
-            Content managed in{' '}
-            <Link href={siteInfo?.url} isExternal color="brand.500">
-              WordPress
+          </Stack>
+
+          <Stack direction={{ base: 'column', sm: 'row' }} spacing={4} fontSize="sm">
+            <Link as={RouterLink} to="/portfolio" color="gray.400" _hover={{ color: 'brand.300' }}>
+              Portfolio
             </Link>
-            {' · '}
-            © {new Date().getFullYear()}
-          </Text>
+            <Link as={RouterLink} to="/blog" color="gray.400" _hover={{ color: 'brand.300' }}>
+              Blog
+            </Link>
+            <Link
+              as="a"
+              href={`mailto:${profile.email}`}
+              color="gray.400"
+              _hover={{ color: 'brand.300' }}
+            >
+              {profile.email}
+            </Link>
+          </Stack>
         </Stack>
+
+        <Text mt={8} fontSize="sm" color="gray.600" textAlign="center">
+          © {year} {profile.name}. Content managed in{' '}
+          <Link href="https://www.aurysilva.co.uk/wp-admin" isExternal color="brand.400">
+            WordPress
+          </Link>
+          .
+        </Text>
       </Container>
     </Box>
   )

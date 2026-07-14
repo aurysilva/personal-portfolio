@@ -23,41 +23,48 @@ interface PostCardProps {
 export function PostCard({ post }: PostCardProps) {
   const imageUrl = getFeaturedImageUrl(post, 'medium')
   const excerpt = stripHtml(post.excerpt.rendered)
+  const title = stripHtml(post.title.rendered)
 
   return (
     <LinkBox
       as="article"
       borderWidth="1px"
-      borderRadius="xl"
+      borderRadius="2xl"
       overflow="hidden"
-      bg="white"
-      _dark={{ bg: 'gray.800', borderColor: 'gray.700' }}
-      transition="transform 0.2s ease, box-shadow 0.2s ease"
+      bg="surface.800"
+      borderColor="whiteAlpha.100"
+      transition="all 0.25s ease"
       _hover={{
         transform: 'translateY(-4px)',
-        shadow: 'lg',
+        borderColor: 'brand.500',
+        shadow: '0 16px 32px rgba(6, 182, 212, 0.1)',
       }}
+      h="100%"
+      display="flex"
+      flexDirection="column"
     >
-      {imageUrl && (
+      {imageUrl ? (
         <Image
           src={imageUrl}
-          alt={stripHtml(post.title.rendered)}
+          alt={title}
           h="200px"
           w="100%"
           objectFit="cover"
         />
+      ) : (
+        <Box h="200px" bg="surface.700" />
       )}
-      <Stack p={6} spacing={3}>
-        <Badge alignSelf="flex-start" colorScheme="brand">
+      <Stack p={6} spacing={3} flex="1">
+        <Badge alignSelf="flex-start" colorScheme="brand" variant="subtle">
           {formatDate(post.date)}
         </Badge>
-        <Heading size="md">
+        <Heading size="md" noOfLines={2}>
           <LinkOverlay as={RouterLink} to={`/blog/${post.slug}`}>
-            <Box dangerouslySetInnerHTML={{ __html: post.title.rendered }} />
+            {title}
           </LinkOverlay>
         </Heading>
         {excerpt && (
-          <Text color="gray.600" _dark={{ color: 'gray.300' }} noOfLines={3}>
+          <Text color="gray.400" noOfLines={3}>
             {excerpt}
           </Text>
         )}

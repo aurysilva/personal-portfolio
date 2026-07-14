@@ -2,8 +2,10 @@ import type {
   FetchOptions,
   WpMenuItem,
   WpPage,
+  WpPortfolio,
   WpPost,
   WpSiteInfo,
+  WpTerm,
 } from './types'
 import { WordPressApiError } from './types'
 
@@ -47,6 +49,7 @@ function buildQuery(options: FetchOptions = {}): string {
   if (options.page) params.set('page', String(options.page))
   if (options.perPage) params.set('per_page', String(options.perPage))
   if (options.search) params.set('search', options.search)
+  if (options.category) params.set('wpb_fp_portfolio_cat', String(options.category))
 
   const query = params.toString()
   return query ? `&${query}` : ''
@@ -88,6 +91,34 @@ export async function fetchPostBySlug(slug: string): Promise<WpPost | null> {
   return posts[0] ?? null
 }
 
+export async function fetchPortfolio(
+  options: FetchOptions = {},
+): Promise<WpPortfolio[]> {
+  return wpFetch<WpPortfolio[]>(
+    `/wp-json/wp/v2/wpb_fp_portfolio?${EMBED_PARAMS}${buildQuery({ perPage: 100, ...options })}`,
+  )
+}
+
+export async function fetchPortfolioBySlug(
+  slug: string,
+): Promise<WpPortfolio | null> {
+  const items = await wpFetch<WpPortfolio[]>(
+    `/wp-json/wp/v2/wpb_fp_portfolio?slug=${encodeURIComponent(slug)}&${EMBED_PARAMS}`,
+  )
+
+  return items[0] ?? null
+}
+
+export async function fetchPortfolioCategories(): Promise<WpTerm[]> {
+  return wpFetch<WpTerm[]>(
+    '/wp-json/wp/v2/wpb_fp_portfolio_cat?per_page=100&orderby=count&order=desc',
+  )
+}
+
+export function getPortfolioTerms(item: WpPortfolio): WpTerm[] {
+  return item._embedded?.['wp:term']?.flat() ?? []
+}
+
 export async function fetchMenu(location = 'primary'): Promise<WpMenuItem[]> {
   try {
     return await wpFetch<WpMenuItem[]>(
@@ -103,7 +134,7 @@ export async function fetchMenu(location = 'primary'): Promise<WpMenuItem[]> {
 }
 
 export function getFeaturedImageUrl(
-  item: WpPage | WpPost,
+  item: WpPage | WpPost | WpPortfolio,
   size: 'full' | 'medium' | 'thumbnail' = 'full',
 ): string | undefined {
   const media = item._embedded?.['wp:featuredmedia']?.[0]

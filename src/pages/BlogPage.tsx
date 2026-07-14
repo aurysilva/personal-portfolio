@@ -5,11 +5,11 @@ import {
   ErrorState,
   LoadingState,
 } from '@/components/content/AsyncStateViews'
-import { usePosts, useSiteInfo } from '@/lib/wordpress'
+import { profile } from '@/data/profile'
+import { usePosts } from '@/lib/wordpress'
 
 export function BlogPage() {
-  const { data: siteInfo } = useSiteInfo()
-  const { data: posts, loading, error } = usePosts()
+  const { data: posts, loading, error } = usePosts({ perPage: 20 })
 
   if (loading) {
     return <LoadingState label="Loading posts…" />
@@ -17,25 +17,28 @@ export function BlogPage() {
 
   if (error) {
     return (
-      <Container>
+      <Container py={12}>
         <ErrorState message={error.message} />
       </Container>
     )
   }
 
   return (
-    <Container>
+    <Container py={{ base: 8, md: 12 }}>
       <PageMeta
-        title={`Blog | ${siteInfo?.name ?? 'Portfolio'}`}
-        description="Latest posts from WordPress"
+        title={`Blog | ${profile.name}`}
+        description="Articles on UX design, React, email development, and full-stack development."
       />
       <Stack spacing={10}>
-        <Stack spacing={3}>
-          <Heading as="h1" size="xl">
+        <Stack spacing={3} maxW="2xl">
+          <Text color="brand.300" fontWeight="semibold" textTransform="uppercase" letterSpacing="wide" fontSize="sm">
             Blog
+          </Text>
+          <Heading as="h1" size="xl">
+            Materials I find interesting
           </Heading>
-          <Text color="gray.600" _dark={{ color: 'gray.300' }}>
-            Posts published from your WordPress CMS.
+          <Text color="gray.400" fontSize="lg">
+            Thoughts on building better digital experiences — pulled live from WordPress.
           </Text>
         </Stack>
 

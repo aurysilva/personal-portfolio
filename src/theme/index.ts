@@ -1,44 +1,61 @@
 import { extendTheme, type ThemeConfig } from '@chakra-ui/react'
 
 const config: ThemeConfig = {
-  initialColorMode: 'light',
-  useSystemColorMode: true,
+  initialColorMode: 'dark',
+  useSystemColorMode: false,
 }
 
 export const theme = extendTheme({
   config,
   fonts: {
-    heading: `'Segoe UI', system-ui, -apple-system, sans-serif`,
-    body: `'Segoe UI', system-ui, -apple-system, sans-serif`,
+    heading: `'Sora', system-ui, sans-serif`,
+    body: `'Sora', system-ui, sans-serif`,
+    mono: `'JetBrains Mono', monospace`,
   },
   colors: {
     brand: {
-      50: '#eef2ff',
-      100: '#e0e7ff',
-      200: '#c7d2fe',
-      300: '#a5b4fc',
-      400: '#818cf8',
-      500: '#6366f1',
-      600: '#4f46e5',
-      700: '#4338ca',
-      800: '#3730a3',
-      900: '#312e81',
+      50: '#ecfeff',
+      100: '#cffafe',
+      200: '#a5f3fc',
+      300: '#67e8f9',
+      400: '#22d3ee',
+      500: '#06b6d4',
+      600: '#0891b2',
+      700: '#0e7490',
+      800: '#155e75',
+      900: '#164e63',
+    },
+    accent: {
+      400: '#fbbf24',
+      500: '#f59e0b',
+      600: '#d97706',
+    },
+    surface: {
+      900: '#070b14',
+      800: '#0f1629',
+      700: '#151d32',
+      600: '#1c2740',
     },
   },
   styles: {
     global: {
+      html: {
+        scrollBehavior: 'smooth',
+      },
       body: {
-        bg: 'gray.50',
-        color: 'gray.800',
-        _dark: {
-          bg: 'gray.900',
-          color: 'gray.100',
-        },
+        bg: 'surface.900',
+        color: 'gray.100',
+      },
+      '::selection': {
+        bg: 'brand.500',
+        color: 'white',
       },
       '.wp-content': {
         lineHeight: 'tall',
+        color: 'gray.300',
         '& h1, & h2, & h3, & h4': {
           fontWeight: 'semibold',
+          color: 'white',
           mt: 8,
           mb: 4,
         },
@@ -46,29 +63,30 @@ export const theme = extendTheme({
           mb: 4,
         },
         '& a': {
-          color: 'brand.600',
+          color: 'brand.300',
           textDecoration: 'underline',
-          _dark: {
-            color: 'brand.300',
-          },
         },
         '& img': {
           maxW: '100%',
           h: 'auto',
-          borderRadius: 'md',
+          borderRadius: 'lg',
           my: 6,
         },
         '& ul, & ol': {
           pl: 6,
           mb: 4,
         },
+        '& pre, & code': {
+          fontFamily: 'mono',
+          fontSize: 'sm',
+        },
         '& blockquote': {
-          borderLeftWidth: '4px',
-          borderLeftColor: 'brand.500',
+          borderLeftWidth: '3px',
+          borderLeftColor: 'brand.400',
           pl: 4,
           py: 2,
           my: 6,
-          fontStyle: 'italic',
+          color: 'gray.400',
         },
       },
     },
@@ -76,8 +94,16 @@ export const theme = extendTheme({
   components: {
     Container: {
       baseStyle: {
-        maxW: 'container.lg',
+        maxW: 'container.xl',
+        px: { base: 4, md: 8 },
+      },
+    },
+    Button: {
+      defaultProps: {
+        colorScheme: 'brand',
       },
     },
   },
 })
+
+export const sectionPy = { base: 16, md: 24 }

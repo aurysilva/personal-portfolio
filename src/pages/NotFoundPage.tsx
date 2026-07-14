@@ -4,15 +4,18 @@ import { PageMeta } from '@/components/seo/PageMeta'
 
 export function NotFoundPage() {
   return (
-    <Container>
+    <Container py={20}>
       <PageMeta title="Page not found" />
-      <Stack spacing={6} py={16} textAlign="center" align="center">
-        <Heading size="xl">404</Heading>
-        <Text color="gray.600" _dark={{ color: 'gray.300' }}>
+      <Stack spacing={6} textAlign="center" align="center">
+        <Text fontSize="6xl" fontWeight="800" color="whiteAlpha.200">
+          404
+        </Text>
+        <Heading size="lg">Page not found</Heading>
+        <Text color="gray.400">
           The page you are looking for could not be found.
         </Text>
-        <Button as={RouterLink} to="/" colorScheme="brand">
-          Go home
+        <Button as={RouterLink} to="/" size="lg">
+          Back to home
         </Button>
       </Stack>
     </Container>
