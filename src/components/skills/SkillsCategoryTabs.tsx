@@ -16,11 +16,27 @@ interface SkillsCategoryTabsProps {
   groups: SkillGroup[]
 }
 
+const tabStyles = {
+  _selected: { bg: 'brand.500', color: 'white' },
+  fontSize: 'sm',
+  fontWeight: 'semibold',
+  borderRadius: 'xl',
+} as const
+
 export function SkillsCategoryTabs({ groups }: SkillsCategoryTabsProps) {
   const totalSkills = groups.reduce((sum, group) => sum + group.skills.length, 0)
+  const defaultIndex = Math.max(
+    0,
+    groups.findIndex((group) => group.id === 'frontend'),
+  )
 
   return (
-    <Tabs variant="soft-rounded" colorScheme="brand" isLazy>
+    <Tabs
+      variant="soft-rounded"
+      colorScheme="brand"
+      isLazy
+      defaultIndex={defaultIndex}
+    >
       <TabList
         flexWrap="wrap"
         gap={2}
@@ -30,28 +46,21 @@ export function SkillsCategoryTabs({ groups }: SkillsCategoryTabsProps) {
         borderRadius="2xl"
         p={2}
       >
-        <Tab
-          _selected={{ bg: 'brand.500', color: 'white' }}
-          fontSize="sm"
-          fontWeight="semibold"
-          borderRadius="xl"
-        >
-          All ({totalSkills})
-        </Tab>
         {groups.map((group) => (
-          <Tab
-            key={group.id}
-            _selected={{ bg: 'brand.500', color: 'white' }}
-            fontSize="sm"
-            fontWeight="semibold"
-            borderRadius="xl"
-          >
+          <Tab key={group.id} {...tabStyles}>
             {group.label} ({group.skills.length})
           </Tab>
         ))}
+        <Tab {...tabStyles}>All ({totalSkills})</Tab>
       </TabList>
 
       <TabPanels mt={{ base: 6, md: 8 }}>
+        {groups.map((group) => (
+          <TabPanel key={group.id} px={0}>
+            <SkillCategoryBlock group={group} showHeader={false} />
+          </TabPanel>
+        ))}
+
         <TabPanel px={0}>
           <Stack spacing={{ base: 8, md: 10 }}>
             {groups.map((group) => (
@@ -59,12 +68,6 @@ export function SkillsCategoryTabs({ groups }: SkillsCategoryTabsProps) {
             ))}
           </Stack>
         </TabPanel>
-
-        {groups.map((group) => (
-          <TabPanel key={group.id} px={0}>
-            <SkillCategoryBlock group={group} showHeader={false} />
-          </TabPanel>
-        ))}
       </TabPanels>
     </Tabs>
   )

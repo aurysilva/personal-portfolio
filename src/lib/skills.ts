@@ -33,14 +33,14 @@ const CATEGORY_META: Record<
     description: 'UI engineering, component libraries, and client-side tooling.',
     order: 1,
   },
+  platform: {
+    label: 'Backend & DevOps',
+    description: 'Server-side stacks, databases, and deployment workflows.',
+    order: 2,
+  },
   email: {
     label: 'Email & CRM',
     description: 'Campaign builds, marketing automation, and CRM integrations.',
-    order: 2,
-  },
-  cms: {
-    label: 'CMS & Page Builders',
-    description: 'Content platforms, commerce, and landing-page systems.',
     order: 3,
   },
   design: {
@@ -48,9 +48,9 @@ const CATEGORY_META: Record<
     description: 'Visual design tools and search optimisation.',
     order: 4,
   },
-  platform: {
-    label: 'Backend & DevOps',
-    description: 'Server-side stacks, databases, and deployment workflows.',
+  cms: {
+    label: 'CMS & Page Builders',
+    description: 'Content platforms, commerce, and landing-page systems.',
     order: 5,
   },
   other: {
@@ -75,7 +75,7 @@ function inferCategory(name: string): SkillCategoryId {
   if (/figma|adobe|photoshop|illustrator|seo|optimization|design/.test(value)) {
     return 'design'
   }
-  if (/azure|devops|c#|\.net|asp\.net|php|mysql|database|node/.test(value)) {
+  if (/azure|devops|dev ops |app services|api|c#|\.net|asp\.net|php|mysql|database|node/.test(value)) {
     return 'platform'
   }
 
