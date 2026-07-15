@@ -36,7 +36,7 @@ export function HomePage() {
         description={profile.about.slice(0, 160)}
       />
 
-      <HeroSection />
+      <HeroSection showPhoto={false} />
 
       <ScrollReveal>
         <MarqueeStrip items={marqueeItems} />

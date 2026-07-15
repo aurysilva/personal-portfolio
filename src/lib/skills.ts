@@ -64,38 +64,48 @@ export function normalizeSkillName(name: string): string {
   return name.replace(/^[\|\s]+/, '').replace(/\s+/g, ' ').trim()
 }
 
-function inferCategory(name: string): SkillCategoryId {
+function inferCategories(name: string): SkillCategoryId[] {
   const value = normalizeSkillName(name).toLowerCase()
+  const categories = new Set<SkillCategoryId>()
+
+  if (/api integration/.test(value)) {
+    categories.add('frontend')
+    categories.add('platform')
+  }
 
   if (
-    /react|javascript|html|css|storybook|graphql|graph ql|shopify\.liquid|vanilla|jquery|styled component|axios|typescript|api integration/.test(
+    /react|javascript|html|css|storybook|graphql|graph ql|shopify\.liquid|vanilla|jquery|styled component|axios|typescript/.test(
       value,
     )
   ) {
-    return 'frontend'
+    categories.add('frontend')
   }
   if (/email|crm|marketo|salesforce|mjml|pardot|adestra|responsys|marketing/.test(value)) {
-    return 'email'
+    categories.add('email')
   }
   if (
     /cms|wordpress|shopify|kentico|umbraco|page builder|instapage|unbounce|drupal|woocommerce/.test(
       value,
     )
   ) {
-    return 'cms'
+    categories.add('cms')
   }
   if (/figma|adobe|photoshop|illustrator|seo|optimization|design/.test(value)) {
-    return 'design'
+    categories.add('design')
   }
   if (
     /azure|devops|dev ops|node\.js|node js|app services|c#|\.net|asp\.net|php|mysql|database|phpmyadmin/.test(
       value,
     )
   ) {
-    return 'platform'
+    categories.add('platform')
   }
 
-  return 'other'
+  if (categories.size === 0) {
+    categories.add('other')
+  }
+
+  return [...categories]
 }
 
 export function groupSkills(skills: SkillItem[]): SkillGroup[] {
@@ -108,10 +118,11 @@ export function groupSkills(skills: SkillItem[]): SkillGroup[] {
     }
     if (!normalized.name) continue
 
-    const category = inferCategory(normalized.name)
-    const list = buckets.get(category) ?? []
-    list.push(normalized)
-    buckets.set(category, list)
+    for (const category of inferCategories(normalized.name)) {
+      const list = buckets.get(category) ?? []
+      list.push(normalized)
+      buckets.set(category, list)
+    }
   }
 
   return [...buckets.entries()]

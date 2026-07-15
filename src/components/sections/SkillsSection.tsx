@@ -93,7 +93,7 @@ export function SkillsSection() {
             )}
           </Flex>
 
-          <SkillsCategoryTabs groups={groups} />
+          <SkillsCategoryTabs groups={groups} uniqueSkillCount={profile.skills.length} />
         </Stack>
       </Container>
     </Box>

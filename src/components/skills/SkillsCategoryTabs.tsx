@@ -14,6 +14,8 @@ import type { SkillGroup } from '@/lib/skills'
 
 interface SkillsCategoryTabsProps {
   groups: SkillGroup[]
+  /** Unique skill count for the All tab (avoids double-counting cross-category skills) */
+  uniqueSkillCount?: number
 }
 
 const tabStyles = {
@@ -23,8 +25,8 @@ const tabStyles = {
   borderRadius: 'xl',
 } as const
 
-export function SkillsCategoryTabs({ groups }: SkillsCategoryTabsProps) {
-  const totalSkills = groups.reduce((sum, group) => sum + group.skills.length, 0)
+export function SkillsCategoryTabs({ groups, uniqueSkillCount }: SkillsCategoryTabsProps) {
+  const totalSkills = uniqueSkillCount ?? groups.reduce((sum, group) => sum + group.skills.length, 0)
   const defaultIndex = Math.max(
     0,
     groups.findIndex((group) => group.id === 'frontend'),
