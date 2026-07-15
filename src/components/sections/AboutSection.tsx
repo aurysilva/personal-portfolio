@@ -1,289 +1,246 @@
 import {
-  Badge,
   Box,
+  Button,
   Container,
   Flex,
   Grid,
   GridItem,
   Heading,
-  HStack,
+  Icon,
   Image,
   SimpleGrid,
   Stack,
   Text,
-  Wrap,
-  WrapItem,
 } from '@chakra-ui/react'
 import { useProfile } from '@/context/ProfileContext'
 import { profileFallback } from '@/data/profile'
+import { highlightAboutText } from '@/lib/aboutContent'
 import { sectionPy } from '@/theme'
+
+const cvUrl = import.meta.env.VITE_CV_URL
 
 export function AboutSection() {
   const { profile } = useProfile()
   const paragraphs = profile.about.split('\n\n').filter(Boolean)
-  const [lead, ...body] = paragraphs
   const profileImage = profile.profileImage ?? profileFallback.profileImage
+  const yearsStat =
+    profile.stats.find((stat) => /years/i.test(stat.label)) ?? profile.stats[0]
 
   return (
     <Box as="section" id="about" py={sectionPy} position="relative" overflow="hidden">
-      <Box
+      <Text
         position="absolute"
-        top="20%"
-        right="-10%"
-        w="400px"
-        h="400px"
-        borderRadius="full"
-        bg="brand.500"
-        opacity={0.05}
-        filter="blur(80px)"
+        bottom={{ base: '-4%', md: '2%' }}
+        right={{ base: '-10%', md: '2%' }}
+        fontSize={{ base: '8xl', md: '12xl' }}
+        fontWeight="800"
+        color="whiteAlpha.50"
+        lineHeight="1"
         pointerEvents="none"
-      />
+        userSelect="none"
+        aria-hidden
+      >
+        01
+      </Text>
 
       <Container maxW="container.xl" position="relative">
-        <Stack spacing={{ base: 10, md: 14 }}>
-          <Grid
-            templateColumns={{ base: '1fr', lg: '340px 1fr' }}
-            gap={{ base: 8, lg: 12 }}
-            alignItems="start"
-          >
-            <GridItem>
-              <Stack spacing={6} position={{ lg: 'sticky' }} top={{ lg: '96px' }}>
-                <Box
-                  borderRadius="2xl"
-                  overflow="hidden"
-                  borderWidth="1px"
-                  borderColor="whiteAlpha.100"
-                  bg="surface.800"
-                  role="group"
-                >
-                  <Box position="relative" overflow="hidden">
-                    {profileImage ? (
-                      <Image
-                        src={profileImage}
-                        alt={profile.name}
-                        w="100%"
-                        h={{ base: '280px', lg: '320px' }}
-                        objectFit="cover"
-                        objectPosition="center 15%"
-                        transition="transform 0.6s cubic-bezier(0.22, 1, 0.36, 1)"
-                        _groupHover={{ transform: 'scale(1.04)' }}
-                      />
-                    ) : (
-                      <Flex
-                        h={{ base: '280px', lg: '320px' }}
-                        bg="surface.700"
-                        align="center"
-                        justify="center"
-                      >
-                        <Text fontSize="5xl" fontWeight="800" color="whiteAlpha.200">
-                          {profile.name.charAt(0)}
-                        </Text>
-                      </Flex>
-                    )}
-                    <Box
-                      position="absolute"
-                      inset={0}
-                      bgGradient="linear(to-t, surface.900 0%, transparent 50%)"
-                    />
-                    <Badge
-                      position="absolute"
-                      top={3}
-                      left={3}
-                      px={2.5}
-                      py={1}
-                      borderRadius="full"
-                      bg={profile.available ? 'green.500' : 'gray.500'}
-                      color="white"
-                      fontSize="10px"
-                      fontWeight="bold"
-                      textTransform="uppercase"
-                      letterSpacing="wider"
-                    >
-                      {profile.available ? 'Open to work' : 'Unavailable'}
-                    </Badge>
-                  </Box>
-
-                  <Stack p={5} spacing={2}>
-                    <Text fontFamily="mono" fontSize="xs" color="brand.400">
-                      01 — Who am I?
-                    </Text>
-                    <Text fontWeight="800" fontSize="xl" color="white">
-                      {profile.name}
-                    </Text>
-                    <Text fontSize="sm" color="brand.300">
-                      {profile.title}
-                    </Text>
-                    <Text fontSize="sm" color="gray.500">
-                      {profile.location}
-                    </Text>
-                  </Stack>
-                </Box>
-
-                <Box
-                  p={5}
-                  borderRadius="2xl"
-                  bg="surface.800"
-                  borderWidth="1px"
-                  borderColor="whiteAlpha.100"
-                >
-                  <Text
-                    fontSize="xs"
-                    fontWeight="semibold"
-                    textTransform="uppercase"
-                    letterSpacing="wider"
-                    color="gray.500"
-                    mb={4}
+        <Grid
+          templateColumns={{ base: '1fr', lg: 'minmax(280px, 420px) 1fr' }}
+          gap={{ base: 10, lg: 16 }}
+          alignItems="center"
+        >
+          <GridItem>
+            <Box position="relative" maxW={{ base: '360px', lg: 'none' }} mx={{ base: 'auto', lg: 0 }}>
+              <Box
+                borderRadius="lg"
+                overflow="hidden"
+                shadow="0 24px 48px rgba(0, 0, 0, 0.45)"
+                bg="surface.800"
+              >
+                {profileImage ? (
+                  <Image
+                    src={profileImage}
+                    alt={profile.name}
+                    w="100%"
+                    h={{ base: '420px', md: '520px', lg: '560px' }}
+                    objectFit="cover"
+                    objectPosition="center 12%"
+                    filter="grayscale(100%)"
+                    transition="filter 0.4s ease"
+                    _hover={{ filter: 'grayscale(20%)' }}
+                  />
+                ) : (
+                  <Flex
+                    h={{ base: '420px', md: '520px' }}
+                    bg="surface.700"
+                    align="center"
+                    justify="center"
                   >
-                    Focus areas
-                  </Text>
-                  <Wrap spacing={2}>
-                    {profile.roles.map((role) => (
-                      <WrapItem key={role}>
-                        <Text
-                          fontSize="xs"
-                          fontWeight="600"
-                          px={3}
-                          py={1.5}
-                          borderRadius="full"
-                          bg="surface.700"
-                          borderWidth="1px"
-                          borderColor="whiteAlpha.100"
-                          color="gray.200"
-                        >
-                          {role}
-                        </Text>
-                      </WrapItem>
-                    ))}
-                  </Wrap>
-                </Box>
-              </Stack>
-            </GridItem>
-
-            <GridItem>
-              <Stack spacing={{ base: 8, md: 10 }}>
-                <Stack spacing={4}>
-                  <Heading
-                    size={{ base: 'xl', md: '2xl' }}
-                    fontWeight="800"
-                    letterSpacing="-0.02em"
-                    lineHeight="shorter"
-                    maxW="3xl"
-                  >
-                    Building digital experiences that blend design &amp; engineering
-                  </Heading>
-
-                  {lead && (
-                    <Text
-                      color="gray.300"
-                      fontSize={{ base: 'md', md: 'lg' }}
-                      lineHeight="1.9"
-                      maxW="3xl"
-                    >
-                      {lead}
+                    <Text fontSize="6xl" fontWeight="800" color="whiteAlpha.200">
+                      {profile.name.charAt(0)}
                     </Text>
-                  )}
-                </Stack>
-
-                <SimpleGrid columns={{ base: 2, sm: 4 }} spacing={3}>
-                  {profile.stats.map((stat) => (
-                    <Box
-                      key={stat.label}
-                      p={4}
-                      borderRadius="xl"
-                      bg="surface.800"
-                      borderWidth="1px"
-                      borderColor="whiteAlpha.100"
-                      transition="all 0.25s ease"
-                      _hover={{ borderColor: 'brand.600' }}
-                    >
-                      <Text
-                        fontSize="2xl"
-                        fontWeight="800"
-                        lineHeight="1"
-                        bgGradient="linear(to-r, brand.300, accent.300)"
-                        bgClip="text"
-                      >
-                        {stat.value}
-                      </Text>
-                      <Text fontSize="xs" color="gray.500" mt={2} lineHeight="short">
-                        {stat.label}
-                      </Text>
-                    </Box>
-                  ))}
-                </SimpleGrid>
-
-                {body.length > 0 && (
-                  <Stack spacing={5}>
-                    {body.map((paragraph) => (
-                      <Text
-                        key={paragraph.slice(0, 48)}
-                        color="gray.400"
-                        lineHeight="1.9"
-                        fontSize="md"
-                      >
-                        {paragraph}
-                      </Text>
-                    ))}
-                  </Stack>
+                  </Flex>
                 )}
+              </Box>
 
-                <Box
-                  p={{ base: 5, md: 6 }}
-                  borderRadius="2xl"
-                  bg="surface.800"
-                  borderWidth="1px"
-                  borderColor="whiteAlpha.100"
-                  position="relative"
-                  overflow="hidden"
-                >
+              <Box
+                position="absolute"
+                bottom={{ base: 4, md: 6 }}
+                right={{ base: -2, md: -6 }}
+                w={{ base: '200px', md: '220px' }}
+                bg="surface.800"
+                borderWidth="2px"
+                borderColor="brand.500"
+                borderRadius="lg"
+                shadow="0 20px 40px rgba(0, 0, 0, 0.35)"
+                overflow="hidden"
+              >
+                {profile.available && (
                   <Box
                     position="absolute"
-                    top={0}
-                    left={0}
-                    w="3px"
-                    h="100%"
-                    bgGradient="linear(to-b, brand.400, accent.400)"
-                  />
-                  <Stack spacing={4} pl={2}>
-                    <Text
-                      fontSize="xs"
-                      fontWeight="semibold"
-                      textTransform="uppercase"
-                      letterSpacing="wider"
-                      color="brand.400"
+                    top="14px"
+                    right="-28px"
+                    w="120px"
+                    py={1}
+                    bg="green.500"
+                    color="white"
+                    fontSize="10px"
+                    fontWeight="bold"
+                    textTransform="uppercase"
+                    letterSpacing="wider"
+                    textAlign="center"
+                    transform="rotate(45deg)"
+                    zIndex={1}
+                    boxShadow="md"
+                  >
+                    Available
+                  </Box>
+                )}
+
+                <Stack spacing={3} p={5} pt={6} align="center" textAlign="center">
+                  <Text
+                    fontSize={{ base: '4xl', md: '5xl' }}
+                    fontWeight="800"
+                    lineHeight="1"
+                    color="brand.400"
+                    fontFamily="heading"
+                  >
+                    {yearsStat?.value ?? '10+'}
+                  </Text>
+                  <Text fontSize="sm" color="gray.300" fontWeight="600" lineHeight="short">
+                    Years of experience
+                  </Text>
+
+                  {cvUrl && (
+                    <Button
+                      as="a"
+                      href={cvUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      size="sm"
+                      w="100%"
+                      mt={1}
+                      leftIcon={<DocumentIcon />}
+                      bg="brand.500"
+                      color="white"
+                      _hover={{ bg: 'brand.400' }}
+                      borderRadius="md"
                     >
-                      What I bring
-                    </Text>
-                    <SimpleGrid columns={{ base: 1, sm: 2 }} spacing={3}>
-                      {profile.highlights.map((item, index) => (
-                        <HStack key={item} align="flex-start" spacing={3}>
-                          <Flex
-                            boxSize={7}
-                            borderRadius="md"
-                            bg="brand.900"
-                            borderWidth="1px"
-                            borderColor="brand.700"
-                            align="center"
-                            justify="center"
-                            flexShrink={0}
-                          >
-                            <Text fontFamily="mono" fontSize="10px" fontWeight="bold" color="brand.300">
-                              {String(index + 1).padStart(2, '0')}
-                            </Text>
-                          </Flex>
-                          <Text color="gray.300" fontSize="sm" lineHeight="tall" pt={0.5}>
-                            {item}
-                          </Text>
-                        </HStack>
-                      ))}
-                    </SimpleGrid>
-                  </Stack>
-                </Box>
+                      Download CV
+                    </Button>
+                  )}
+                </Stack>
+              </Box>
+            </Box>
+          </GridItem>
+
+          <GridItem>
+            <Stack spacing={{ base: 6, md: 8 }} maxW="3xl">
+              <Stack spacing={3}>
+                <Text
+                  fontSize="sm"
+                  fontWeight="semibold"
+                  color="brand.400"
+                  letterSpacing="wide"
+                >
+                  Who am I?
+                </Text>
+                <Heading
+                  size={{ base: 'xl', md: '2xl' }}
+                  fontWeight="800"
+                  letterSpacing="-0.02em"
+                  lineHeight="shorter"
+                >
+                  About me
+                </Heading>
               </Stack>
-            </GridItem>
-          </Grid>
-        </Stack>
+
+              <Stack spacing={5}>
+                {paragraphs.map((paragraph) => (
+                  <Box
+                    key={paragraph.slice(0, 48)}
+                    color="gray.400"
+                    fontSize={{ base: 'sm', md: 'sm' }}
+                    lineHeight="1.9"
+                    sx={{
+                      strong: {
+                        color: 'white',
+                        fontWeight: 700,
+                      },
+                    }}
+                    dangerouslySetInnerHTML={{
+                      __html: highlightAboutText(paragraph),
+                    }}
+                  />
+                ))}
+              </Stack>
+
+              <SimpleGrid columns={{ base: 1, sm: 2 }} spacing={4} pt={2}>
+                {profile.highlights.map((item) => (
+                  <HighlightItem key={item}>{item}</HighlightItem>
+                ))}
+              </SimpleGrid>
+            </Stack>
+          </GridItem>
+        </Grid>
       </Container>
     </Box>
+  )
+}
+
+function HighlightItem({ children }: { children: string }) {
+  return (
+    <Flex align="flex-start" gap={3}>
+      <Flex
+        mt={1}
+        boxSize={5}
+        borderRadius="full"
+        bg="brand.900"
+        align="center"
+        justify="center"
+        flexShrink={0}
+      >
+        <Icon viewBox="0 0 24 24" boxSize={3} color="brand.400">
+          <path
+            fill="currentColor"
+            d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"
+          />
+        </Icon>
+      </Flex>
+      <Text color="gray.300" fontSize="md" lineHeight="tall">
+        {children}
+      </Text>
+    </Flex>
+  )
+}
+
+function DocumentIcon() {
+  return (
+    <Icon viewBox="0 0 24 24" boxSize={4}>
+      <path
+        fill="currentColor"
+        d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 2 5 5h-5V4zM8 13h8v2H8v-2zm0 4h8v2H8v-2z"
+      />
+    </Icon>
   )
 }

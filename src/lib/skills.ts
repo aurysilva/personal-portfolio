@@ -75,7 +75,7 @@ function inferCategory(name: string): SkillCategoryId {
   if (/figma|adobe|photoshop|illustrator|seo|optimization|design/.test(value)) {
     return 'design'
   }
-  if (/azure|devops|dev ops |app services|api|c#|\.net|asp\.net|php|mysql|database|node/.test(value)) {
+  if (/azure|devops|dev ops |node js|node.js|app services|api|c#|\.net|asp\.net|php|mysql|database|node/.test(value)) {
     return 'platform'
   }
 
