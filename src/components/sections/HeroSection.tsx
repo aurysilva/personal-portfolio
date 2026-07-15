@@ -215,7 +215,7 @@ export function HeroSection({ showPhoto = true }: HeroSectionProps) {
                     Digital
                   </Text>
                   <br />
-                  Developer
+                  Full-stack Developer
                 </Text>
                 <Text
                   fontSize={{ base: 'md', md: 'lg' }}
@@ -223,7 +223,7 @@ export function HeroSection({ showPhoto = true }: HeroSectionProps) {
                   maxW="2xl"
                   lineHeight="tall"
                 >
-                  {profile.title} crafting React apps, email campaigns, landing pages &amp; CMS builds for agencies and brands.
+                  {profile.title} crafting web applications and Integrations, email campaigns, landing pages &amp; CMS builds for agencies and brands.
                 </Text>
               </Stack>
 

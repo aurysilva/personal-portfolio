@@ -163,6 +163,7 @@ function StatPill({
         lineHeight="1"
         bgGradient="linear(to-r, brand.300, accent.300)"
         bgClip="text"
+        color="green.100"
       >
         {value}
       </Text>
