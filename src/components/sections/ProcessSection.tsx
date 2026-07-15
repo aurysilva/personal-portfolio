@@ -1,56 +1,63 @@
 import {
   Box,
   Container,
+  Heading,
   SimpleGrid,
   Stack,
   Text,
 } from '@chakra-ui/react'
 import { profile } from '@/data/profile'
-import { SectionHeading } from '@/components/ui/SectionHeading'
 import { sectionPy } from '@/theme'
 
 export function ProcessSection() {
   return (
     <Box as="section" id="process" py={sectionPy} bg="surface.800">
-      <Container>
-        <Stack spacing={12}>
-          <SectionHeading
-            eyebrow="Working process"
-            title="My top 3 rules when working remotely"
-            align="center"
-          />
+      <Container maxW="container.xl">
+        <Stack spacing={{ base: 12, md: 16 }}>
+          <Stack spacing={4} textAlign="center" maxW="2xl" mx="auto">
+            <Text
+              fontSize="sm"
+              fontWeight="semibold"
+              textTransform="uppercase"
+              letterSpacing="wider"
+              color="brand.400"
+            >
+              Working Process
+            </Text>
+            <Heading size={{ base: 'xl', md: '2xl' }} fontWeight="800" letterSpacing="-0.02em">
+              How I work remotely
+            </Heading>
+          </Stack>
 
-          <SimpleGrid columns={{ base: 1, md: 3 }} spacing={6}>
-            {profile.process.map((item) => (
+          <SimpleGrid columns={{ base: 1, md: 3 }} spacing={0}>
+            {profile.process.map((item, index) => (
               <Box
                 key={item.step}
-                p={8}
-                borderRadius="2xl"
-                bg="surface.700"
+                p={{ base: 8, md: 10 }}
                 borderWidth="1px"
                 borderColor="whiteAlpha.100"
+                borderLeftWidth={{ md: index === 0 ? '1px' : 0 }}
                 position="relative"
-                overflow="hidden"
               >
-                <Text
-                  position="absolute"
-                  top={4}
-                  right={6}
-                  fontSize="5xl"
-                  fontWeight="800"
-                  color="whiteAlpha.100"
-                  lineHeight="1"
-                >
-                  {item.step}
-                </Text>
-                <Stack spacing={3} position="relative">
-                  <Text color="brand.300" fontFamily="mono" fontSize="sm">
+                <Stack spacing={5}>
+                  <Text
+                    fontSize={{ base: '4xl', md: '5xl' }}
+                    fontWeight="800"
+                    bgGradient="linear(to-b, brand.300, brand.600)"
+                    bgClip="text"
+                    fontFamily="mono"
+                    lineHeight="1"
+                  >
                     {item.step}
                   </Text>
-                  <Text fontSize="xl" fontWeight="700">
-                    {item.title}
-                  </Text>
-                  <Text color="gray.400">{item.description}</Text>
+                  <Stack spacing={2}>
+                    <Text fontSize="lg" fontWeight="700">
+                      {item.title}
+                    </Text>
+                    <Text color="gray.400" fontSize="sm" lineHeight="tall">
+                      {item.description}
+                    </Text>
+                  </Stack>
                 </Stack>
               </Box>
             ))}

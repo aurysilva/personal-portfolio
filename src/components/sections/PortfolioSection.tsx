@@ -3,29 +3,32 @@ import {
   Box,
   Button,
   Container,
-  SimpleGrid,
+  Flex,
+  Heading,
   Stack,
+  Text,
   Wrap,
   WrapItem,
 } from '@chakra-ui/react'
 import { Link as RouterLink } from 'react-router-dom'
-import { PortfolioCard } from '@/components/content/PortfolioCard'
+import { PortfolioCarousel } from '@/components/portfolio/PortfolioCarousel'
 import {
   ErrorState,
   LoadingState,
 } from '@/components/content/AsyncStateViews'
-import { SectionHeading } from '@/components/ui/SectionHeading'
 import { usePortfolio, usePortfolioCategories } from '@/lib/wordpress'
 import { sectionPy } from '@/theme'
 
 interface PortfolioSectionProps {
   limit?: number
   showFilters?: boolean
+  carousel?: boolean
 }
 
 export function PortfolioSection({
   limit,
   showFilters = false,
+  carousel = false,
 }: PortfolioSectionProps) {
   const [activeCategory, setActiveCategory] = useState<number | undefined>()
   const { data: categories } = usePortfolioCategories()
@@ -35,8 +38,9 @@ export function PortfolioSection({
 
   const visibleItems = useMemo(() => {
     if (!items) return []
+    if (carousel) return items.slice(0, 15)
     return limit ? items.slice(0, limit) : items
-  }, [items, limit])
+  }, [items, limit, carousel])
 
   if (loading) {
     return <LoadingState label="Loading portfolio…" />
@@ -52,40 +56,54 @@ export function PortfolioSection({
 
   return (
     <Box as="section" id="portfolio" py={sectionPy}>
-      <Container>
-        <Stack spacing={10}>
-          <Stack
+      <Container maxW="container.xl">
+        <Stack spacing={{ base: 10, md: 14 }}>
+          <Flex
             direction={{ base: 'column', md: 'row' }}
             justify="space-between"
             align={{ base: 'flex-start', md: 'flex-end' }}
-            spacing={6}
+            gap={6}
           >
-            <SectionHeading
-              eyebrow="What have I been doing?"
-              title="Projects I created and collaborated on"
-              description="Selected work from React apps, email development, landing pages, and CMS builds."
-            />
-            {limit && (
-              <Button
-                as={RouterLink}
-                to="/portfolio"
-                variant="outline"
-                borderColor="whiteAlpha.300"
-                flexShrink={0}
+            <Stack spacing={4} maxW="2xl">
+              <Text
+                fontSize="sm"
+                fontWeight="semibold"
+                textTransform="uppercase"
+                letterSpacing="wider"
+                color="brand.400"
               >
-                View all projects
-              </Button>
-            )}
-          </Stack>
+                03 — Selected Work
+              </Text>
+              <Heading
+                size={{ base: 'xl', md: '2xl' }}
+                fontWeight="800"
+                letterSpacing="-0.02em"
+                lineHeight="shorter"
+              >
+                Projects I created &amp; collaborated on
+              </Heading>
+              {carousel && (
+                <Text color="gray.500" fontSize="sm">
+                  Showing 3 at a time — slides one project at a time (up to 15 items)
+                </Text>
+              )}
+            </Stack>
+            <Button
+              as={RouterLink}
+              to="/portfolio"
+              variant="outline"
+              borderColor="whiteAlpha.300"
+              size="lg"
+              flexShrink={0}
+            >
+              View all →
+            </Button>
+          </Flex>
 
           {showFilters && categories && categories.length > 0 && (
             <Wrap spacing={2}>
               <WrapItem>
-                <FilterChip
-                  label="All"
-                  active={!activeCategory}
-                  onClick={() => setActiveCategory(undefined)}
-                />
+                <FilterChip label="All" active={!activeCategory} onClick={() => setActiveCategory(undefined)} />
               </WrapItem>
               {categories.map((cat) => (
                 <WrapItem key={cat.id}>
@@ -99,11 +117,9 @@ export function PortfolioSection({
             </Wrap>
           )}
 
-          <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={6}>
-            {visibleItems.map((item) => (
-              <PortfolioCard key={item.id} item={item} compact={!!limit} />
-            ))}
-          </SimpleGrid>
+          {carousel ? (
+            <PortfolioCarousel items={visibleItems} />
+          ) : null}
         </Stack>
       </Container>
     </Box>

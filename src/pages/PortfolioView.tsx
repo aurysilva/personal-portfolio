@@ -1,35 +1,30 @@
-import {
-  Badge,
-  Box,
-  Button,
-  Container,
-  HStack,
-  Heading,
-  Image,
-  Stack,
-  Text,
-} from '@chakra-ui/react'
+import { Box, Button, Container, Flex, Heading, Stack, Text } from '@chakra-ui/react'
 import { Link as RouterLink, useParams } from 'react-router-dom'
 import { PageMeta } from '@/components/seo/PageMeta'
-import { WpContent } from '@/components/content/WpContent'
+import { ProjectHero } from '@/components/portfolio/ProjectHero'
+import { ProjectMetaGrid } from '@/components/portfolio/ProjectMetaGrid'
+import { ProjectQuoteBlock } from '@/components/portfolio/ProjectQuoteBlock'
+import { ProjectStorySections } from '@/components/portfolio/ProjectStorySections'
+import { ProjectGallery } from '@/components/portfolio/ProjectGallery'
+import { RelatedProjects } from '@/components/portfolio/RelatedProjects'
 import {
   ErrorState,
   LoadingState,
 } from '@/components/content/AsyncStateViews'
+import { stripHtml, usePortfolioItem } from '@/lib/wordpress'
 import {
-  getFeaturedImageUrl,
-  getPortfolioTerms,
-  stripHtml,
-  usePortfolioItem,
-} from '@/lib/wordpress'
-import { extractProjectLinks } from '@/lib/content'
+  decodeHtmlEntities,
+  extractProjectLinks,
+  parseProjectStory,
+} from '@/lib/content'
+import { profile } from '@/data/profile'
 
 export function PortfolioView() {
   const { slug } = useParams<{ slug: string }>()
   const { data: item, loading, error } = usePortfolioItem(slug)
 
   if (loading) {
-    return <LoadingState />
+    return <LoadingState label="Loading project…" />
   }
 
   if (error) {
@@ -51,98 +46,98 @@ export function PortfolioView() {
     )
   }
 
-  const title = stripHtml(item.title.rendered)
-  const imageUrl = getFeaturedImageUrl(item)
-  const terms = getPortfolioTerms(item)
+  const title = decodeHtmlEntities(stripHtml(item.title.rendered))
   const links = extractProjectLinks(item.content.rendered)
+  const story = parseProjectStory(item.content.rendered)
+  const summary = story.quote?.text ?? title
 
   return (
-    <Container py={{ base: 8, md: 12 }} maxW="container.md">
-      <PageMeta title={`${title} | Portfolio`} />
-      <Stack spacing={8}>
-        <Stack spacing={4}>
-          <Button
-            as={RouterLink}
-            to="/portfolio"
-            variant="ghost"
-            alignSelf="flex-start"
-            color="gray.400"
-            size="sm"
+    <Box as="article" bg="surface.900">
+      <PageMeta title={`${title} | Portfolio`} description={summary} />
+
+      <ProjectHero item={item} />
+
+      <ProjectMetaGrid item={item} quote={story.quote} links={links} />
+
+      {story.quote && <ProjectQuoteBlock quote={story.quote} />}
+
+      <Box py={{ base: 12, md: 20 }}>
+        <Container maxW="container.lg" mb={{ base: 12, md: 16 }}>
+          <Heading
+            size={{ base: 'lg', md: 'xl' }}
+            fontWeight="700"
+            letterSpacing="-0.02em"
+            maxW="3xl"
           >
-            ← Back to portfolio
-          </Button>
-
-          <HStack spacing={2} flexWrap="wrap">
-            {terms.map((term) => (
-              <Badge key={term.id} colorScheme="brand">
-                {term.name}
-              </Badge>
-            ))}
-          </HStack>
-
-          <Heading as="h1" size="xl">
-            {title}
+            Crafting digital experiences that solve real business problems
           </Heading>
+        </Container>
 
-          <HStack spacing={3} flexWrap="wrap">
+        <ProjectStorySections sections={story.sections} />
+      </Box>
+
+      <ProjectGallery images={story.images} />
+
+      <ProjectCta links={links} />
+
+      {slug && <RelatedProjects currentSlug={slug} />}
+    </Box>
+  )
+}
+
+function ProjectCta({ links }: { links: { live?: string; github?: string } }) {
+  return (
+    <Box
+      py={{ base: 16, md: 20 }}
+      borderTopWidth="1px"
+      borderColor="whiteAlpha.100"
+      bg="surface.800"
+    >
+      <Container maxW="container.lg">
+        <Stack spacing={8} textAlign="center" align="center">
+          <Stack spacing={3}>
+            <Heading size="lg">Interested in working together?</Heading>
+            <Text color="gray.400" maxW="lg">
+              I design and build landing pages, email campaigns, React applications,
+              and CMS-driven sites for agencies and brands.
+            </Text>
+          </Stack>
+
+          <Flex gap={4} flexWrap="wrap" justify="center">
             {links.live && (
-              <Button as="a" href={links.live} target="_blank" rel="noopener noreferrer">
-                View live
-              </Button>
-            )}
-            {links.github && (
               <Button
                 as="a"
-                href={links.github}
+                href={links.live}
                 target="_blank"
                 rel="noopener noreferrer"
-                variant="outline"
-                borderColor="whiteAlpha.300"
+                size="lg"
+                bgGradient="linear(to-r, brand.500, brand.400)"
+                _hover={{ bgGradient: 'linear(to-r, brand.400, brand.300)' }}
               >
-                GitHub
+                View live project ↗
               </Button>
             )}
-            {links.client && (
-              <Button
-                as="a"
-                href={links.client}
-                target="_blank"
-                rel="noopener noreferrer"
-                variant="ghost"
-              >
-                Client site
-              </Button>
-            )}
-          </HStack>
+            <Button
+              as="a"
+              href={`mailto:${profile.email}`}
+              size="lg"
+              variant="outline"
+              borderColor="whiteAlpha.300"
+            >
+              Get in touch
+            </Button>
+            <Button
+              as={RouterLink}
+              to="/portfolio"
+              size="lg"
+              variant="ghost"
+              color="gray.400"
+            >
+              More projects
+            </Button>
+          </Flex>
         </Stack>
-
-        {imageUrl && (
-          <Image
-            src={imageUrl}
-            alt={title}
-            borderRadius="2xl"
-            w="100%"
-            maxH="480px"
-            objectFit="cover"
-            borderWidth="1px"
-            borderColor="whiteAlpha.100"
-          />
-        )}
-
-        <Box
-          p={{ base: 0, md: 2 }}
-          borderRadius="xl"
-          bg="surface.800"
-          borderWidth={{ base: 0, md: '1px' }}
-          borderColor="whiteAlpha.100"
-        >
-          <WpContent html={item.content.rendered} />
-        </Box>
-
-        <Text fontSize="sm" color="gray.500">
-          Published {new Date(item.date).toLocaleDateString()}
-        </Text>
-      </Stack>
-    </Container>
+      </Container>
+    </Box>
   )
 }

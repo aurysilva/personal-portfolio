@@ -3,7 +3,6 @@ import { Link as RouterLink, useParams } from 'react-router-dom'
 import { PageMeta } from '@/components/seo/PageMeta'
 import { ArticleContent } from '@/components/content/ArticleContent'
 import { ArticleHero } from '@/components/blog/ArticleHero'
-import { ArticleSidebar } from '@/components/blog/ArticleSidebar'
 import { RelatedPosts } from '@/components/blog/RelatedPosts'
 import {
   ErrorState,

@@ -2,8 +2,11 @@ import {
   Box,
   Button,
   Container,
+  Flex,
+  Heading,
   SimpleGrid,
   Stack,
+  Text,
 } from '@chakra-ui/react'
 import { Link as RouterLink } from 'react-router-dom'
 import { PostCard } from '@/components/content/PostCard'
@@ -11,7 +14,6 @@ import {
   ErrorState,
   LoadingState,
 } from '@/components/content/AsyncStateViews'
-import { SectionHeading } from '@/components/ui/SectionHeading'
 import { usePosts } from '@/lib/wordpress'
 import { sectionPy } from '@/theme'
 
@@ -35,38 +37,48 @@ export function BlogPreviewSection({ limit = 3 }: BlogPreviewSectionProps) {
   }
 
   return (
-    <Box as="section" id="blog" py={sectionPy}>
-      <Container>
-        <Stack spacing={10}>
-          <Stack
+    <Box as="section" id="blog" py={sectionPy} bg="surface.800">
+      <Container maxW="container.xl">
+        <Stack spacing={{ base: 10, md: 14 }}>
+          <Flex
             direction={{ base: 'column', md: 'row' }}
             justify="space-between"
             align={{ base: 'flex-start', md: 'flex-end' }}
-            spacing={6}
+            gap={6}
           >
-            <SectionHeading
-              eyebrow="What do I find interesting?"
-              title="Materials I find interesting"
-              description="Thoughts on UX, React, email development, and full-stack craft."
-            />
+            <Stack spacing={4} maxW="2xl">
+              <Text
+                fontSize="sm"
+                fontWeight="semibold"
+                textTransform="uppercase"
+                letterSpacing="wider"
+                color="brand.400"
+              >
+                05 — Insights
+              </Text>
+              <Heading size={{ base: 'xl', md: '2xl' }} fontWeight="800" letterSpacing="-0.02em">
+                Materials I find interesting
+              </Heading>
+            </Stack>
             <Button
               as={RouterLink}
               to="/blog"
               variant="outline"
               borderColor="whiteAlpha.300"
+              size="lg"
               flexShrink={0}
             >
-              View all posts
+              All posts →
             </Button>
-          </Stack>
+          </Flex>
 
-          {posts && posts.length > 0 ? (
-            <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={6}>
+          {posts && posts.length > 0 && (
+            <SimpleGrid columns={{ base: 1, md: 3 }} spacing={6}>
               {posts.map((post) => (
                 <PostCard key={post.id} post={post} />
               ))}
             </SimpleGrid>
-          ) : null}
+          )}
         </Stack>
       </Container>
     </Box>

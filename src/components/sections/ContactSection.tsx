@@ -1,150 +1,123 @@
-import type { ReactNode } from 'react'
 import {
   Box,
   Button,
   Container,
-  Icon,
-  SimpleGrid,
+  Flex,
+  Heading,
+  Link,
   Stack,
   Text,
 } from '@chakra-ui/react'
 import { profile } from '@/data/profile'
-import { SectionHeading } from '@/components/ui/SectionHeading'
 import { sectionPy } from '@/theme'
-
-function MailIcon() {
-  return (
-    <Icon viewBox="0 0 24 24" boxSize={5}>
-      <path
-        fill="currentColor"
-        d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2Zm0 2v.01L12 13 4 6.01V6h16ZM4 18V8.24l7.38 6.19a1 1 0 0 0 1.24 0L20 8.24V18H4Z"
-      />
-    </Icon>
-  )
-}
-
-function PhoneIcon() {
-  return (
-    <Icon viewBox="0 0 24 24" boxSize={5}>
-      <path
-        fill="currentColor"
-        d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1-.24 11.36 11.36 0 0 0 3.57.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1 11.36 11.36 0 0 0 .57 3.57 1 1 0 0 1-.25 1l-2.2 2.22Z"
-      />
-    </Icon>
-  )
-}
-
-function PinIcon() {
-  return (
-    <Icon viewBox="0 0 24 24" boxSize={5}>
-      <path
-        fill="currentColor"
-        d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7Zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5Z"
-      />
-    </Icon>
-  )
-}
 
 export function ContactSection() {
   return (
-    <Box as="section" id="contact" py={sectionPy} bg="surface.800">
-      <Container>
-        <Stack spacing={10}>
-          <SectionHeading
-            eyebrow="Get in touch"
-            title="Let's build something together"
-            description="Available for freelance, contract, and full-time opportunities. Reach out anytime."
-            align="center"
-          />
+    <Box as="section" id="contact" position="relative" overflow="hidden">
+      <Box
+        position="absolute"
+        inset={0}
+        bgGradient="radial(circle at 50% 100%, rgba(6,182,212,0.2), transparent 60%)"
+        pointerEvents="none"
+      />
 
-          <SimpleGrid columns={{ base: 1, md: 3 }} spacing={6} maxW="4xl" mx="auto" w="100%">
-            <ContactCard
-              icon={<PinIcon />}
-              label="Location"
-              value={profile.location}
-            />
-            <ContactCard
-              icon={<MailIcon />}
-              label="Email"
-              value={profile.email}
-              href={`mailto:${profile.email}`}
-            />
-            <ContactCard
-              icon={<PhoneIcon />}
-              label="Phone"
-              value={profile.phone}
-              href={`tel:${profile.phone.replace(/\s/g, '')}`}
-            />
-          </SimpleGrid>
+      <Container maxW="container.xl" py={sectionPy} position="relative">
+        <Flex
+          direction={{ base: 'column', lg: 'row' }}
+          align={{ base: 'flex-start', lg: 'center' }}
+          justify="space-between"
+          gap={{ base: 10, lg: 16 }}
+        >
+          <Stack spacing={6} maxW="2xl">
+            <Text
+              fontSize="sm"
+              fontWeight="semibold"
+              textTransform="uppercase"
+              letterSpacing="wider"
+              color="brand.400"
+            >
+              Get in touch
+            </Text>
+            <Heading
+              size={{ base: '2xl', md: '3xl', lg: '4xl' }}
+              fontWeight="800"
+              letterSpacing="-0.03em"
+              lineHeight="shorter"
+            >
+              Have a project in mind?{' '}
+              <Text
+                as="span"
+                bgGradient="linear(to-r, brand.300, accent.400)"
+                bgClip="text"
+              >
+                Let&apos;s talk.
+              </Text>
+            </Heading>
+            <Text color="gray.400" fontSize="lg">
+              Available for freelance, contract, and full-time opportunities across the UK and remote.
+            </Text>
+          </Stack>
 
-          <Stack align="center" spacing={4}>
+          <Stack spacing={4} minW={{ lg: '320px' }}>
+            <ContactLine label="Email" value={profile.email} href={`mailto:${profile.email}`} />
+            <ContactLine label="Phone" value={profile.phone} href={`tel:${profile.phone.replace(/\s/g, '')}`} />
+            <ContactLine label="Location" value={profile.location} />
             <Button
               as="a"
               href={`mailto:${profile.email}`}
               size="lg"
+              mt={2}
+              w="100%"
               bgGradient="linear(to-r, brand.500, brand.400)"
               _hover={{ bgGradient: 'linear(to-r, brand.400, brand.300)' }}
             >
               Send an email
             </Button>
-            <Text color="gray.500" fontSize="sm">
-              Or connect on{' '}
-              <Box
-                as="a"
-                href={profile.social.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                color="brand.300"
-                textDecoration="underline"
-              >
+            <Text fontSize="sm" color="gray.500" textAlign="center">
+              Or find me on{' '}
+              <Link href={profile.social.github} isExternal color="brand.300">
                 GitHub
-              </Box>
+              </Link>
             </Text>
           </Stack>
-        </Stack>
+        </Flex>
       </Container>
     </Box>
   )
 }
 
-function ContactCard({
-  icon,
+function ContactLine({
   label,
   value,
   href,
 }: {
-  icon: ReactNode
   label: string
   value: string
   href?: string
 }) {
   const content = (
-    <Stack
-      p={6}
-      borderRadius="2xl"
-      bg="surface.700"
-      borderWidth="1px"
-      borderColor="whiteAlpha.100"
-      spacing={3}
+    <Flex
+      justify="space-between"
       align="center"
-      textAlign="center"
-      h="100%"
-      transition="border-color 0.2s"
-      _hover={{ borderColor: 'brand.500' }}
+      py={4}
+      borderBottomWidth="1px"
+      borderColor="whiteAlpha.100"
+      gap={4}
     >
-      <Box color="brand.300">{icon}</Box>
-      <Text fontSize="sm" color="gray.500" textTransform="uppercase" letterSpacing="wide">
+      <Text fontSize="xs" fontWeight="semibold" textTransform="uppercase" letterSpacing="wider" color="gray.500">
         {label}
       </Text>
-      <Text fontWeight="semibold">{value}</Text>
-    </Stack>
+      <Text fontWeight="medium" color="gray.200" fontSize="sm" textAlign="right">
+        {value}
+      </Text>
+    </Flex>
   )
 
   if (href) {
     return (
-      <Box as="a" href={href} _hover={{ textDecoration: 'none' }}>
+      <Link href={href} _hover={{ textDecoration: 'none', color: 'brand.300' }}>
         {content}
-      </Box>
+      </Link>
     )
   }
 

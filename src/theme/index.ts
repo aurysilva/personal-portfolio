@@ -46,6 +46,10 @@ export const theme = extendTheme({
         bg: 'surface.900',
         color: 'gray.100',
       },
+      '@keyframes marquee': {
+        '0%': { transform: 'translateX(0)' },
+        '100%': { transform: 'translateX(-50%)' },
+      },
       '::selection': {
         bg: 'brand.500',
         color: 'white',
@@ -184,6 +188,31 @@ export const theme = extendTheme({
           borderRadius: '0 lg lg 0',
           fontStyle: 'italic',
           color: 'gray.300',
+        },
+      },
+      '.project-story': {
+        fontSize: { base: 'md', md: 'lg' },
+        lineHeight: '1.9',
+        color: 'gray.400',
+        '& p': {
+          mb: 6,
+        },
+        '& a': {
+          color: 'brand.300',
+          fontWeight: '500',
+          textDecoration: 'underline',
+          textUnderlineOffset: '3px',
+          _hover: { color: 'brand.200' },
+        },
+        '& strong': {
+          color: 'white',
+          fontWeight: '600',
+        },
+        '& ul, & ol': {
+          pl: 6,
+          mb: 6,
+          '& li': { mb: 2 },
+          '& li::marker': { color: 'brand.400' },
         },
       },
     },

@@ -1,52 +1,66 @@
 import {
   Box,
   Container,
-  Divider,
+  Flex,
+  Heading,
   SimpleGrid,
   Stack,
   Text,
 } from '@chakra-ui/react'
 import { profile } from '@/data/profile'
-import { SectionHeading } from '@/components/ui/SectionHeading'
 import { sectionPy } from '@/theme'
 
 export function ExperienceSection() {
   return (
-    <Box as="section" id="experience" py={sectionPy} bg="surface.800">
-      <Container>
-        <Stack spacing={12}>
-          <SectionHeading
-            eyebrow="Awesome journey"
-            title="Qualifications & experience"
-            description="Within my permanent roles listed below, I also worked as a freelancer and sometimes held two jobs at once — one permanent and one temporary."
-            align="center"
-          />
+    <Box as="section" id="experience" py={sectionPy}>
+      <Container maxW="container.xl">
+        <Stack spacing={{ base: 12, md: 16 }}>
+          <Stack spacing={4} maxW="2xl">
+            <Text
+              fontSize="sm"
+              fontWeight="semibold"
+              textTransform="uppercase"
+              letterSpacing="wider"
+              color="brand.400"
+            >
+              04 — Journey
+            </Text>
+            <Heading size={{ base: 'xl', md: '2xl' }} fontWeight="800" letterSpacing="-0.02em">
+              Qualifications &amp; experience
+            </Heading>
+            <Text color="gray.400">
+              Permanent roles, freelance work, and sometimes two jobs at once.
+            </Text>
+          </Stack>
 
-          <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={10}>
-            <Stack spacing={4}>
-              <Text fontSize="lg" fontWeight="700" color="brand.300">
-                Qualifications
+          <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={{ base: 10, lg: 16 }}>
+            <Stack spacing={6}>
+              <Text fontSize="xs" fontWeight="semibold" textTransform="uppercase" letterSpacing="wider" color="gray.500">
+                Education
               </Text>
               {profile.qualifications.map((item, index) => (
-                <TimelineItem
+                <ExperienceRow
                   key={item.title}
-                  {...item}
-                  isLast={index === profile.qualifications.length - 1}
+                  index={index + 1}
+                  org={item.org}
+                  title={item.title}
+                  period={item.period}
                 />
               ))}
             </Stack>
 
-            <Stack spacing={4}>
-              <Text fontSize="lg" fontWeight="700" color="accent.400">
-                Experience
+            <Stack spacing={6}>
+              <Text fontSize="xs" fontWeight="semibold" textTransform="uppercase" letterSpacing="wider" color="gray.500">
+                Work Experience
               </Text>
               {profile.experience.map((item, index) => (
-                <TimelineItem
+                <ExperienceRow
                   key={item.org}
+                  index={index + 1}
                   org={item.org}
                   title={item.role}
                   period={item.period}
-                  isLast={index === profile.experience.length - 1}
+                  accent
                 />
               ))}
             </Stack>
@@ -57,31 +71,45 @@ export function ExperienceSection() {
   )
 }
 
-function TimelineItem({
+function ExperienceRow({
+  index,
   org,
   title,
   period,
-  isLast,
+  accent,
 }: {
+  index: number
   org: string
   title: string
   period: string
-  isLast?: boolean
+  accent?: boolean
 }) {
   return (
-    <Box display="flex" gap={4}>
-      <Stack align="center" spacing={0}>
-        <Box boxSize={3} borderRadius="full" bg="brand.400" mt={2} />
-        {!isLast && <Box w="1px" flex="1" bg="whiteAlpha.200" minH="60px" />}
-      </Stack>
-      <Stack spacing={1} pb={isLast ? 0 : 4} flex="1">
+    <Flex
+      gap={5}
+      p={5}
+      borderRadius="xl"
+      borderWidth="1px"
+      borderColor="whiteAlpha.100"
+      bg="surface.800"
+      transition="border-color 0.2s"
+      _hover={{ borderColor: accent ? 'accent.600' : 'brand.600' }}
+    >
+      <Text
+        fontFamily="mono"
+        fontSize="sm"
+        fontWeight="700"
+        color={accent ? 'accent.400' : 'brand.400'}
+        flexShrink={0}
+        pt={0.5}
+      >
+        {String(index).padStart(2, '0')}
+      </Text>
+      <Stack spacing={1} flex="1">
         <Text fontWeight="700">{org}</Text>
-        <Text color="gray.300">{title}</Text>
-        <Text fontSize="sm" color="gray.500">
-          {period}
-        </Text>
-        {!isLast && <Divider borderColor="whiteAlpha.100" mt={3} />}
+        <Text color="gray.300" fontSize="sm">{title}</Text>
+        <Text fontSize="xs" color="gray.500">{period}</Text>
       </Stack>
-    </Box>
+    </Flex>
   )
 }
