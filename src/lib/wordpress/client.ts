@@ -33,8 +33,29 @@ function getBaseUrl(): string {
   return WORDPRESS_URL
 }
 
+async function parseJsonResponse<T>(response: Response, url: string): Promise<T> {
+  const contentType = response.headers.get('content-type') ?? ''
+
+  if (!contentType.includes('json')) {
+    throw new WordPressApiError(
+      `WordPress API returned HTML instead of JSON (${url}). Set VITE_WORDPRESS_URL to your WordPress folder (e.g. https://www.aurysilva.co.uk/backendwp) and rebuild.`,
+      response.status,
+    )
+  }
+
+  try {
+    return (await response.json()) as T
+  } catch {
+    throw new WordPressApiError(
+      `WordPress API response was not valid JSON (${url}). Check VITE_WORDPRESS_URL and rebuild the site.`,
+      response.status,
+    )
+  }
+}
+
 async function wpFetch<T>(path: string, init?: RequestInit): Promise<T> {
-  const response = await fetch(`${getBaseUrl()}${path}`, {
+  const url = `${getBaseUrl()}${path}`
+  const response = await fetch(url, {
     ...init,
     headers: {
       Accept: 'application/json',
@@ -49,11 +70,12 @@ async function wpFetch<T>(path: string, init?: RequestInit): Promise<T> {
     )
   }
 
-  return response.json() as Promise<T>
+  return parseJsonResponse<T>(response, url)
 }
 
 async function wpFetchPaginated<T>(path: string): Promise<PaginatedResult<T>> {
-  const response = await fetch(`${getBaseUrl()}${path}`, {
+  const url = `${getBaseUrl()}${path}`
+  const response = await fetch(url, {
     headers: { Accept: 'application/json' },
   })
 
@@ -64,7 +86,7 @@ async function wpFetchPaginated<T>(path: string): Promise<PaginatedResult<T>> {
     )
   }
 
-  const items = (await response.json()) as T
+  const items = await parseJsonResponse<T>(response, url)
 
   return {
     items,
