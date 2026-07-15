@@ -119,6 +119,18 @@ export function getPortfolioTerms(item: WpPortfolio): WpTerm[] {
   return item._embedded?.['wp:term']?.flat() ?? []
 }
 
+export function getPostCategories(post: WpPost): WpTerm[] {
+  return (
+    post._embedded?.['wp:term']
+      ?.flat()
+      .filter((term) => term.taxonomy === 'category') ?? []
+  )
+}
+
+export function getPostAuthor(post: WpPost): string | undefined {
+  return post._embedded?.author?.[0]?.name || undefined
+}
+
 export async function fetchMenu(location = 'primary'): Promise<WpMenuItem[]> {
   try {
     return await wpFetch<WpMenuItem[]>(
