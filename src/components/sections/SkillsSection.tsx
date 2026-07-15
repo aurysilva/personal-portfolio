@@ -7,7 +7,7 @@ import {
   Stack,
   Text,
 } from '@chakra-ui/react'
-import { profile } from '@/data/profile'
+import { useProfile } from '@/context/ProfileContext'
 import { sectionPy } from '@/theme'
 
 const TRACK_COLOR = 'rgba(214, 217, 246, 0.22)'
@@ -15,6 +15,8 @@ const FILL_COLOR = 'brand.200'
 const THUMB_COLOR = 'accent.400'
 
 export function SkillsSection() {
+  const { profile } = useProfile()
+
   return (
     <Box as="section" id="skills" py={sectionPy} bg="surface.800">
       <Container maxW="container.xl">

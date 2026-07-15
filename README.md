@@ -6,8 +6,8 @@ A brand-new React frontend for [aurysilva.co.uk](https://www.aurysilva.co.uk), p
 
 - React 18 + TypeScript + Vite
 - Chakra UI v2 (dark-first design)
-- WordPress REST API for portfolio items, blog posts, and site metadata
-- Static profile config for skills, experience, and contact details
+- WordPress REST API for portfolio items, blog posts, site metadata, and homepage profile content
+- Profile data (skills, about, experience) synced from the WordPress homepage
 
 ## Quick start
 
@@ -27,8 +27,11 @@ Open [http://localhost:5173](http://localhost:5173).
 | Portfolio categories | `wpb_fp_portfolio_cat` taxonomy |
 | Blog posts | `/wp-json/wp/v2/posts` |
 | Site name & tagline | `/wp-json` |
+| Skills, about, experience, process | Homepage page (`VITE_WORDPRESS_HOME_SLUG`) via Elementor content |
 
-Profile sections (skills, experience, about text, contact) live in `src/data/profile.ts` and can later be moved to ACF custom fields in WordPress.
+Skills, bio, highlights, qualifications, and experience are parsed from your WordPress homepage. Update them in Elementor on that page and they propagate to the React frontend on refresh. Email and social links still use local fallbacks until exposed via WordPress (e.g. ACF Options).
+
+For a more robust long-term setup, add **ACF field groups** with REST API enabled and replace the HTML parser with structured JSON fields.
 
 ## Routes
 
@@ -73,6 +76,7 @@ Deploy the `dist/` folder to Netlify, Vercel, or Cloudflare Pages. Point `www.au
 
 ```env
 VITE_WORDPRESS_URL=https://www.aurysilva.co.uk
+VITE_WORDPRESS_HOME_SLUG=aury-silva-front-end-and-email-developer
 VITE_CV_URL=          # direct link to your CV PDF for the Download CV button
 ```
 
@@ -85,7 +89,8 @@ src/
 │   ├── layout/        # Header, Footer, Layout
 │   ├── sections/      # Hero, About, Skills, Portfolio, etc.
 │   └── ui/            # SectionHeading
-├── data/profile.ts    # Skills, experience, contact info
+├── context/ProfileContext.tsx  # Profile provider (WordPress + fallbacks)
+├── data/profile.ts    # Profile types + offline fallbacks
 ├── lib/wordpress/     # API client & hooks
 └── pages/             # Route views
 ```

@@ -1,9 +1,11 @@
 import { Stack } from '@chakra-ui/react'
 import { PageMeta } from '@/components/seo/PageMeta'
+import { useProfile } from '@/context/ProfileContext'
 import { PortfolioSection } from '@/components/sections/PortfolioSection'
-import { profile } from '@/data/profile'
 
 export function PortfolioPage() {
+  const { profile } = useProfile()
+
   return (
     <>
       <PageMeta

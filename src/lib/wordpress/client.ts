@@ -1,5 +1,14 @@
+import { profileFallback, type Profile } from '@/data/profile'
+import {
+  buildQueryCacheKey,
+  getCachedQuery,
+  prefetchQuery,
+  setCachedQuery,
+} from './cache'
+import { mergeProfile, parseProfileFromPage } from './parseProfile'
 import type {
   FetchOptions,
+  PaginatedResult,
   WpMenuItem,
   WpPage,
   WpPortfolio,
@@ -41,6 +50,27 @@ async function wpFetch<T>(path: string, init?: RequestInit): Promise<T> {
   }
 
   return response.json() as Promise<T>
+}
+
+async function wpFetchPaginated<T>(path: string): Promise<PaginatedResult<T>> {
+  const response = await fetch(`${getBaseUrl()}${path}`, {
+    headers: { Accept: 'application/json' },
+  })
+
+  if (!response.ok) {
+    throw new WordPressApiError(
+      `WordPress request failed: ${response.status} ${response.statusText}`,
+      response.status,
+    )
+  }
+
+  const items = (await response.json()) as T
+
+  return {
+    items,
+    total: Number(response.headers.get('X-WP-Total') ?? 0),
+    totalPages: Number(response.headers.get('X-WP-TotalPages') ?? 1),
+  }
 }
 
 function buildQuery(options: FetchOptions = {}): string {
@@ -99,6 +129,48 @@ export async function fetchPortfolio(
   )
 }
 
+export async function fetchPortfolioPaginated(
+  options: FetchOptions = {},
+): Promise<PaginatedResult<WpPortfolio[]>> {
+  return wpFetchPaginated<WpPortfolio[]>(
+    `/wp-json/wp/v2/wpb_fp_portfolio?${EMBED_PARAMS}${buildQuery({ perPage: 15, ...options })}`,
+  )
+}
+
+export const PORTFOLIO_PAGE_SIZE = 15
+
+export function prefetchPortfolioListing(): void {
+  prefetchQuery(
+    buildQueryCacheKey('portfolio-paginated', {
+      page: 1,
+      perPage: PORTFOLIO_PAGE_SIZE,
+    }),
+    () =>
+      fetchPortfolioPaginated({ page: 1, perPage: PORTFOLIO_PAGE_SIZE }),
+  )
+
+  prefetchQuery(buildQueryCacheKey('portfolio-categories', {}), () =>
+    fetchPortfolioCategories(),
+  )
+}
+
+export function seedPortfolioPageOneCache(items: WpPortfolio[]): void {
+  if (items.length === 0) return
+
+  const key = buildQueryCacheKey('portfolio-paginated', {
+    page: 1,
+    perPage: PORTFOLIO_PAGE_SIZE,
+  })
+
+  if (getCachedQuery(key)) return
+
+  setCachedQuery(key, {
+    items: items.slice(0, PORTFOLIO_PAGE_SIZE),
+    total: items.length,
+    totalPages: Math.max(1, Math.ceil(items.length / PORTFOLIO_PAGE_SIZE)),
+  })
+}
+
 export async function fetchPortfolioBySlug(
   slug: string,
 ): Promise<WpPortfolio | null> {
@@ -113,6 +185,24 @@ export async function fetchPortfolioCategories(): Promise<WpTerm[]> {
   return wpFetch<WpTerm[]>(
     '/wp-json/wp/v2/wpb_fp_portfolio_cat?per_page=100&orderby=count&order=desc',
   )
+}
+
+const HOME_PAGE_SLUG =
+  import.meta.env.VITE_WORDPRESS_HOME_SLUG ??
+  'aury-silva-front-end-and-email-developer'
+
+export async function fetchProfile(): Promise<Profile> {
+  const [siteInfo, page] = await Promise.all([
+    fetchSiteInfo(),
+    fetchPageBySlug(HOME_PAGE_SLUG),
+  ])
+
+  if (!page?.content?.rendered) {
+    return profileFallback
+  }
+
+  const parsed = parseProfileFromPage(page.content.rendered, siteInfo)
+  return mergeProfile(parsed, profileFallback)
 }
 
 export function getPortfolioTerms(item: WpPortfolio): WpTerm[] {

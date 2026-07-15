@@ -17,7 +17,7 @@ import {
   extractProjectLinks,
   parseProjectStory,
 } from '@/lib/content'
-import { profile } from '@/data/profile'
+import { useProfile } from '@/context/ProfileContext'
 
 export function PortfolioView() {
   const { slug } = useParams<{ slug: string }>()
@@ -86,6 +86,8 @@ export function PortfolioView() {
 }
 
 function ProjectCta({ links }: { links: { live?: string; github?: string } }) {
+  const { profile } = useProfile()
+
   return (
     <Box
       py={{ base: 16, md: 20 }}

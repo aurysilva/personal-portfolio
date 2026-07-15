@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from 'react'
+import type { Profile } from '@/data/profile'
 import type {
   FetchOptions,
+  PaginatedResult,
   WpMenuItem,
   WpPage,
   WpPortfolio,
@@ -10,15 +12,24 @@ import type {
 } from './types'
 import { WordPressApiError } from './types'
 import {
+  buildQueryCacheKey,
+  getCachedQuery,
+  setCachedQuery,
+} from './cache'
+import {
   fetchMenu,
   fetchPageBySlug,
   fetchPages,
   fetchPortfolio,
   fetchPortfolioBySlug,
   fetchPortfolioCategories,
+  fetchPortfolioPaginated,
+  fetchProfile,
   fetchPostBySlug,
   fetchPosts,
   fetchSiteInfo,
+  PORTFOLIO_PAGE_SIZE,
+  seedPortfolioPageOneCache,
 } from './client'
 
 interface AsyncState<T> {
@@ -27,37 +38,76 @@ interface AsyncState<T> {
   error: WordPressApiError | Error | null
 }
 
+const inflightQueries = new Map<string, Promise<unknown>>()
+
+function runQuery<T>(cacheKey: string | undefined, queryFn: () => Promise<T>): Promise<T> {
+  if (!cacheKey) return queryFn()
+
+  const pending = inflightQueries.get(cacheKey) as Promise<T> | undefined
+  if (pending) return pending
+
+  const request = queryFn()
+    .then((data) => {
+      setCachedQuery(cacheKey, data)
+      return data
+    })
+    .finally(() => {
+      inflightQueries.delete(cacheKey)
+    })
+
+  inflightQueries.set(cacheKey, request)
+  return request
+}
+
 function useWordPressQuery<T>(
   queryFn: () => Promise<T>,
   deps: unknown[] = [],
-): AsyncState<T> & { refetch: () => void } {
-  const [state, setState] = useState<AsyncState<T>>({
-    data: null,
-    loading: true,
-    error: null,
+  cacheKey?: string,
+): AsyncState<T> & { refetch: () => void; isValidating: boolean } {
+  const [state, setState] = useState<AsyncState<T>>(() => {
+    if (cacheKey) {
+      const cached = getCachedQuery<T>(cacheKey)
+      if (cached) {
+        return { data: cached, loading: false, error: null }
+      }
+    }
+
+    return { data: null, loading: true, error: null }
   })
+  const [isValidating, setIsValidating] = useState(false)
 
   const load = useCallback(() => {
     let cancelled = false
+    const cached = cacheKey ? getCachedQuery<T>(cacheKey) : null
 
-    setState((current) => ({ ...current, loading: true, error: null }))
+    if (cached) {
+      setState({ data: cached, loading: false, error: null })
+      setIsValidating(true)
+    } else {
+      setState({ data: null, loading: true, error: null })
+      setIsValidating(false)
+    }
 
-    queryFn()
+    const run = () => runQuery(cacheKey, queryFn)
+
+    run()
       .then((data) => {
         if (!cancelled) {
           setState({ data, loading: false, error: null })
+          setIsValidating(false)
         }
       })
       .catch((error: unknown) => {
         if (!cancelled) {
-          setState({
-            data: null,
+          setState((current) => ({
+            data: current.data,
             loading: false,
             error:
               error instanceof Error
                 ? error
                 : new Error('Unexpected WordPress error'),
-          })
+          }))
+          setIsValidating(false)
         }
       })
 
@@ -70,7 +120,7 @@ function useWordPressQuery<T>(
     return load()
   }, [load])
 
-  return { ...state, refetch: load }
+  return { ...state, refetch: load, isValidating }
 }
 
 export function useSiteInfo() {
@@ -110,9 +160,31 @@ export function useMenu(location = 'primary') {
 }
 
 export function usePortfolio(options: FetchOptions = {}) {
+  const cacheKey =
+    !options.page && !options.category && !options.search
+      ? buildQueryCacheKey('portfolio-all', { perPage: 100 })
+      : undefined
+
   return useWordPressQuery<WpPortfolio[]>(
-    () => fetchPortfolio(options),
+    async () => {
+      const items = await fetchPortfolio(options)
+      if (!options.category && !options.page && !options.search) {
+        seedPortfolioPageOneCache(items)
+      }
+      return items
+    },
     [options.page, options.perPage, options.search, options.category],
+    cacheKey,
+  )
+}
+
+export function usePortfolioPaginated(options: FetchOptions = {}) {
+  const cacheKey = buildQueryCacheKey('portfolio-paginated', options)
+
+  return useWordPressQuery<PaginatedResult<WpPortfolio[]>>(
+    () => fetchPortfolioPaginated(options),
+    [options.page, options.perPage, options.search, options.category],
+    cacheKey,
   )
 }
 
@@ -124,5 +196,19 @@ export function usePortfolioItem(slug: string | undefined) {
 }
 
 export function usePortfolioCategories() {
-  return useWordPressQuery<WpTerm[]>(() => fetchPortfolioCategories(), [])
+  return useWordPressQuery<WpTerm[]>(
+    () => fetchPortfolioCategories(),
+    [],
+    buildQueryCacheKey('portfolio-categories', {}),
+  )
 }
+
+export function useWordPressProfile() {
+  return useWordPressQuery<Profile>(
+    () => fetchProfile(),
+    [],
+    buildQueryCacheKey('profile', {}),
+  )
+}
+
+export { PORTFOLIO_PAGE_SIZE }

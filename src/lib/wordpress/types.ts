@@ -84,6 +84,12 @@ export interface FetchOptions {
   category?: number
 }
 
+export interface PaginatedResult<T> {
+  items: T
+  total: number
+  totalPages: number
+}
+
 export class WordPressApiError extends Error {
   status: number
 

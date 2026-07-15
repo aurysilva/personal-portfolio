@@ -10,14 +10,16 @@ import {
   Text,
 } from '@chakra-ui/react'
 import { Link as RouterLink } from 'react-router-dom'
-import { profile } from '@/data/profile'
+import { useProfile } from '@/context/ProfileContext'
+import { profileFallback } from '@/data/profile'
 import heroVideo from '@/assets/videos/video-coding-sample.mp4'
 
 const cvUrl = import.meta.env.VITE_CV_URL
-const profileImage =
-  'https://www.aurysilva.co.uk/wp-content/uploads/2025/04/IMG_1526-scaled.jpeg'
 
 export function HeroSection() {
+  const { profile } = useProfile()
+  const profileImage = profile.profileImage ?? profileFallback.profileImage
+
   return (
     <Box
       as="section"

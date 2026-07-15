@@ -8,13 +8,14 @@ import {
 import { Link as RouterLink } from 'react-router-dom'
 import type { WpPost } from '@/lib/wordpress'
 import { formatDate, getPostCategories } from '@/lib/wordpress'
-import { profile } from '@/data/profile'
+import { useProfile } from '@/context/ProfileContext'
 
 interface ArticleSidebarProps {
   post: WpPost
 }
 
 export function ArticleSidebar({ post }: ArticleSidebarProps) {
+  const { profile } = useProfile()
   const categories = getPostCategories(post)
 
   return (

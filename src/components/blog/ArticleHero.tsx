@@ -18,13 +18,14 @@ import {
   stripHtml,
 } from '@/lib/wordpress'
 import { decodeHtmlEntities, estimateReadingTime } from '@/lib/content'
-import { profile } from '@/data/profile'
+import { useProfile } from '@/context/ProfileContext'
 
 interface ArticleHeroProps {
   post: WpPost
 }
 
 export function ArticleHero({ post }: ArticleHeroProps) {
+  const { profile } = useProfile()
   const imageUrl = getFeaturedImageUrl(post)
   const title = decodeHtmlEntities(stripHtml(post.title.rendered))
   const excerpt = decodeHtmlEntities(stripHtml(post.excerpt.rendered))

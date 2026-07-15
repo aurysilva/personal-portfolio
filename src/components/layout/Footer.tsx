@@ -6,10 +6,11 @@ import {
   Text,
 } from '@chakra-ui/react'
 import { Link as RouterLink } from 'react-router-dom'
-import { profile } from '@/data/profile'
+import { useProfile } from '@/context/ProfileContext'
 import { useSiteInfo } from '@/lib/wordpress'
 
 export function Footer() {
+  const { profile } = useProfile()
   const { data: siteInfo } = useSiteInfo()
   const year = new Date().getFullYear()
 

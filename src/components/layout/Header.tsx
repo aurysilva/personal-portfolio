@@ -11,7 +11,7 @@ import {
   useColorMode,
 } from '@chakra-ui/react'
 import { Link as RouterLink, useLocation } from 'react-router-dom'
-import { profile } from '@/data/profile'
+import { useProfile } from '@/context/ProfileContext'
 import { scrollToSection } from '@/lib/content'
 import { useSiteInfo } from '@/lib/wordpress'
 
@@ -26,6 +26,7 @@ const navItems = [
 
 export function Header() {
   const location = useLocation()
+  const { profile } = useProfile()
   const { data: siteInfo } = useSiteInfo()
   const { colorMode, toggleColorMode } = useColorMode()
   const isHome = location.pathname === '/'

@@ -8,10 +8,12 @@ import {
   Stack,
   Text,
 } from '@chakra-ui/react'
-import { profile } from '@/data/profile'
+import { useProfile } from '@/context/ProfileContext'
 import { sectionPy } from '@/theme'
 
 export function AboutSection() {
+  const { profile } = useProfile()
+
   return (
     <Box as="section" id="about" py={sectionPy}>
       <Container maxW="container.xl">

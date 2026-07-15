@@ -8,10 +8,12 @@ import {
   Stack,
   Text,
 } from '@chakra-ui/react'
-import { profile } from '@/data/profile'
+import { useProfile } from '@/context/ProfileContext'
 import { sectionPy } from '@/theme'
 
 export function ContactSection() {
+  const { profile } = useProfile()
+
   return (
     <Box as="section" id="contact" position="relative" overflow="hidden">
       <Box

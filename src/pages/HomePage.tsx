@@ -1,4 +1,5 @@
 import { Box } from '@chakra-ui/react'
+import { useMemo } from 'react'
 import { PageMeta } from '@/components/seo/PageMeta'
 import { ScrollReveal } from '@/components/ui/ScrollReveal'
 import { MarqueeStrip } from '@/components/ui/MarqueeStrip'
@@ -10,19 +11,24 @@ import { PortfolioSection } from '@/components/sections/PortfolioSection'
 import { ExperienceSection } from '@/components/sections/ExperienceSection'
 import { BlogPreviewSection } from '@/components/sections/BlogPreviewSection'
 import { ContactSection } from '@/components/sections/ContactSection'
-import { profile } from '@/data/profile'
-
-const marqueeItems = [
-  ...profile.roles,
-  'React & TypeScript',
-  'WordPress',
-  'Email Development',
-  'UI/UX Design',
-  'Shopify',
-  'Marketo & Salesforce',
-]
+import { useProfile } from '@/context/ProfileContext'
 
 export function HomePage() {
+  const { profile } = useProfile()
+
+  const marqueeItems = useMemo(
+    () => [
+      ...profile.roles,
+      'React & TypeScript',
+      'WordPress',
+      'Email Development',
+      'UI/UX Design',
+      'Shopify',
+      'Marketo & Salesforce',
+    ],
+    [profile.roles],
+  )
+
   return (
     <Box as="main">
       <PageMeta

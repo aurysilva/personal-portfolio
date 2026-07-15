@@ -5,10 +5,11 @@ import {
   ErrorState,
   LoadingState,
 } from '@/components/content/AsyncStateViews'
-import { profile } from '@/data/profile'
+import { useProfile } from '@/context/ProfileContext'
 import { usePosts } from '@/lib/wordpress'
 
 export function BlogPage() {
+  const { profile } = useProfile()
   const { data: posts, loading, error } = usePosts({ perPage: 20 })
 
   if (loading) {

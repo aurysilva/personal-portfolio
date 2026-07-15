@@ -13,7 +13,7 @@ import {
   usePost,
 } from '@/lib/wordpress'
 import { decodeHtmlEntities } from '@/lib/content'
-import { profile } from '@/data/profile'
+import { useProfile } from '@/context/ProfileContext'
 
 export function PostView() {
   const { slug } = useParams<{ slug: string }>()
@@ -81,6 +81,8 @@ export function PostView() {
 }
 
 function ArticleFooter() {
+  const { profile } = useProfile()
+
   return (
     <Stack
       mt={10}

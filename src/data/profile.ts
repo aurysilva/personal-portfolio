@@ -1,4 +1,26 @@
-export const profile = {
+export interface Profile {
+  name: string
+  title: string
+  location: string
+  email: string
+  phone: string
+  available: boolean
+  roles: string[]
+  intro: string
+  about: string
+  highlights: string[]
+  stats: Array<{ value: string; label: string }>
+  skills: Array<{ name: string; level: number }>
+  process: Array<{ step: string; title: string; description: string }>
+  qualifications: Array<{ org: string; title: string; period: string }>
+  experience: Array<{ org: string; role: string; period: string }>
+  social: {
+    github: string
+  }
+  profileImage?: string
+}
+
+export const profileFallback: Profile = {
   name: 'Aury Silva',
   title: 'Full-stack Developer',
   location: 'Hull, United Kingdom',
@@ -103,6 +125,6 @@ I am passionate about crafting intuitive, visually engaging experiences and writ
   social: {
     github: 'https://github.com/aurysilva',
   },
-} as const
-
-export type Profile = typeof profile
+  profileImage:
+    'https://www.aurysilva.co.uk/wp-content/uploads/2025/04/IMG_1526-scaled.jpeg',
+}
