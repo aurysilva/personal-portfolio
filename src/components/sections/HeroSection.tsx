@@ -6,15 +6,93 @@ import {
   Flex,
   HStack,
   Image,
+  SimpleGrid,
   Stack,
   Text,
 } from '@chakra-ui/react'
+import { useState } from 'react'
 import { Link as RouterLink } from 'react-router-dom'
 import { useProfile } from '@/context/ProfileContext'
 import { profileFallback } from '@/data/profile'
 import heroVideo from '@/assets/videos/video-coding-sample.mp4'
 
 const cvUrl = import.meta.env.VITE_CV_URL
+
+function getHeroHighlightStats(
+  stats: Array<{ value: string; label: string }>,
+): Array<{ value: string; label: string }> {
+  const byPattern = (pattern: RegExp) =>
+    stats.find((stat) => pattern.test(stat.label) || pattern.test(stat.value))
+
+  const years = byPattern(/years/i)
+  const agency = byPattern(/agency|b2b/i)
+
+  return [
+    { value: 'BA', label: 'BA Digital Design' },
+    {
+      value: years?.value ?? '10+',
+      label: years?.label ?? 'Years Dev Experience',
+    },
+    {
+      value: agency?.value ?? 'B2B & B2C',
+      label: agency?.label ?? 'Agency Experience',
+    },
+    { value: 'Available', label: '' },
+  ]
+}
+
+function HeroHighlightGrid({
+  stats,
+}: {
+  stats: Array<{ value: string; label: string }>
+}) {
+  return (
+    <SimpleGrid
+      columns={2}
+      spacing={4}
+      w={{ base: '100%', sm: '340px', lg: '400px' }}
+      mx="auto"
+    >
+      {stats.map((stat) => (
+        <Box
+          key={stat.value}
+          p={{ base: 4, md: 5 }}
+          borderRadius="xl"
+          borderWidth="1px"
+          borderColor={stat.value === 'Available' ? 'green.700' : 'whiteAlpha.200'}
+          bg={stat.value === 'Available' ? 'green.900' : 'whiteAlpha.100'}
+          backdropFilter="blur(8px)"
+          textAlign="center"
+          transition="all 0.3s ease"
+          _hover={{
+            borderColor: stat.value === 'Available' ? 'green.500' : 'brand.400',
+            transform: 'translateY(-2px)',
+          }}
+        >
+          <Text
+            fontSize={{ base: 'xl', md: '2xl' }}
+            fontWeight="800"
+            lineHeight="1.1"
+            bgGradient={
+              stat.value === 'Available'
+                ? undefined
+                : 'linear(to-r, brand.300, accent.400)'
+            }
+            bgClip={stat.value === 'Available' ? undefined : 'text'}
+            color={stat.value === 'Available' ? 'green.300' : undefined}
+          >
+            {stat.value}
+          </Text>
+          {stat.label ? (
+            <Text fontSize="xs" color="gray.400" mt={2} lineHeight="short">
+              {stat.label}
+            </Text>
+          ) : null}
+        </Box>
+      ))}
+    </SimpleGrid>
+  )
+}
 
 interface HeroSectionProps {
   /** When false, hides the profile photo column on the right */
@@ -23,7 +101,10 @@ interface HeroSectionProps {
 
 export function HeroSection({ showPhoto = true }: HeroSectionProps) {
   const { profile } = useProfile()
+  const [imageError, setImageError] = useState(false)
   const profileImage = profile.profileImage ?? profileFallback.profileImage
+  const displayPhoto = showPhoto && Boolean(profileImage) && !imageError
+  const highlightStats = getHeroHighlightStats(profile.stats)
 
   return (
     <Box
@@ -185,6 +266,7 @@ export function HeroSection({ showPhoto = true }: HeroSectionProps) {
                 ) : null}
               </HStack>
 
+              {!displayPhoto ? null : (
               <Flex
                 pt={6}
                 gap={{ base: 6, md: 10 }}
@@ -209,10 +291,11 @@ export function HeroSection({ showPhoto = true }: HeroSectionProps) {
                   </Stack>
                 ))}
               </Flex>
+              )}
             </Stack>
           </motion.div>
 
-          {showPhoto && (
+          {displayPhoto ? (
           <motion.div
             initial={{ opacity: 0, x: 40, scale: 0.95 }}
             animate={{ opacity: 1, x: 0, scale: 1 }}
@@ -248,6 +331,7 @@ export function HeroSection({ showPhoto = true }: HeroSectionProps) {
                   w="100%"
                   objectFit="cover"
                   aspectRatio={3 / 4}
+                  onError={() => setImageError(true)}
                 />
               </Box>
               <Box
@@ -267,6 +351,15 @@ export function HeroSection({ showPhoto = true }: HeroSectionProps) {
                 </Text>
               </Box>
             </Box>
+          </motion.div>
+          ) : (
+          <motion.div
+            initial={{ opacity: 0, x: 40 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+            style={{ flexShrink: 0, width: '100%', maxWidth: '400px' }}
+          >
+            <HeroHighlightGrid stats={highlightStats} />
           </motion.div>
           )}
         </Flex>
