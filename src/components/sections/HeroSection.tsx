@@ -16,7 +16,12 @@ import heroVideo from '@/assets/videos/video-coding-sample.mp4'
 
 const cvUrl = import.meta.env.VITE_CV_URL
 
-export function HeroSection() {
+interface HeroSectionProps {
+  /** When false, hides the profile photo column on the right */
+  showPhoto?: boolean
+}
+
+export function HeroSection({ showPhoto = true }: HeroSectionProps) {
   const { profile } = useProfile()
   const profileImage = profile.profileImage ?? profileFallback.profileImage
 
@@ -207,6 +212,7 @@ export function HeroSection() {
             </Stack>
           </motion.div>
 
+          {showPhoto && (
           <motion.div
             initial={{ opacity: 0, x: 40, scale: 0.95 }}
             animate={{ opacity: 1, x: 0, scale: 1 }}
@@ -262,6 +268,7 @@ export function HeroSection() {
               </Box>
             </Box>
           </motion.div>
+          )}
         </Flex>
       </Container>
 

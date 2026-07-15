@@ -1,3 +1,4 @@
+import { normalizeSkillName } from '@/lib/skills'
 import { decodeHtmlEntities } from '@/lib/content'
 import type { Profile } from '@/data/profile'
 import { stripHtml } from './client'
@@ -55,7 +56,7 @@ function parseSkills(html: string): Profile['skills'] {
   return [...html.matchAll(/aria-valuetext="(\d+)% \(([^"]+)\)"/gi)].map(
     (match) => ({
       level: Number.parseInt(match[1], 10),
-      name: cleanText(match[2]),
+      name: normalizeSkillName(cleanText(match[2])),
     }),
   )
 }

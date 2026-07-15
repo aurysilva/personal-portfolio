@@ -60,22 +60,38 @@ const CATEGORY_META: Record<
   },
 }
 
-function inferCategory(name: string): SkillCategoryId {
-  const value = name.toLowerCase()
+export function normalizeSkillName(name: string): string {
+  return name.replace(/^[\|\s]+/, '').replace(/\s+/g, ' ').trim()
+}
 
-  if (/react|javascript|html|css|storybook|graphql|shopify\.liquid|vanilla|jquery|styled component|axios|typescript/.test(value)) {
+function inferCategory(name: string): SkillCategoryId {
+  const value = normalizeSkillName(name).toLowerCase()
+
+  if (
+    /react|javascript|html|css|storybook|graphql|graph ql|shopify\.liquid|vanilla|jquery|styled component|axios|typescript|api integration/.test(
+      value,
+    )
+  ) {
     return 'frontend'
   }
   if (/email|crm|marketo|salesforce|mjml|pardot|adestra|responsys|marketing/.test(value)) {
     return 'email'
   }
-  if (/cms|wordpress|shopify|kentico|umbraco|page builder|instapage|unbounce|drupal|woocommerce|liquid/.test(value)) {
+  if (
+    /cms|wordpress|shopify|kentico|umbraco|page builder|instapage|unbounce|drupal|woocommerce/.test(
+      value,
+    )
+  ) {
     return 'cms'
   }
   if (/figma|adobe|photoshop|illustrator|seo|optimization|design/.test(value)) {
     return 'design'
   }
-  if (/azure|devops|dev ops |node js|node.js|app services|api|c#|\.net|asp\.net|php|mysql|database|node/.test(value)) {
+  if (
+    /azure|devops|dev ops|node\.js|node js|app services|c#|\.net|asp\.net|php|mysql|database|phpmyadmin/.test(
+      value,
+    )
+  ) {
     return 'platform'
   }
 
@@ -86,9 +102,15 @@ export function groupSkills(skills: SkillItem[]): SkillGroup[] {
   const buckets = new Map<SkillCategoryId, SkillItem[]>()
 
   for (const skill of skills) {
-    const category = inferCategory(skill.name)
+    const normalized = {
+      ...skill,
+      name: normalizeSkillName(skill.name),
+    }
+    if (!normalized.name) continue
+
+    const category = inferCategory(normalized.name)
     const list = buckets.get(category) ?? []
-    list.push(skill)
+    list.push(normalized)
     buckets.set(category, list)
   }
 
