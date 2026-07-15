@@ -46,6 +46,9 @@ export const theme = extendTheme({
         bg: 'surface.900',
         color: 'gray.100',
       },
+      '[id]': {
+        scrollMarginTop: '5rem',
+      },
       '@keyframes marquee': {
         '0%': { transform: 'translateX(0)' },
         '100%': { transform: 'translateX(-50%)' },

@@ -30,7 +30,7 @@ export function HomePage() {
   )
 
   return (
-    <Box as="main">
+    <Box>
       <PageMeta
         title={`${profile.name} – ${profile.title}`}
         description={profile.about.slice(0, 160)}

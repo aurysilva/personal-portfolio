@@ -10,6 +10,7 @@ import {
   Text,
   useColorMode,
 } from '@chakra-ui/react'
+import type { MouseEvent } from 'react'
 import { Link as RouterLink, useLocation } from 'react-router-dom'
 import { useProfile } from '@/context/ProfileContext'
 import { scrollToSection } from '@/lib/content'
@@ -31,10 +32,11 @@ export function Header() {
   const { colorMode, toggleColorMode } = useColorMode()
   const isHome = location.pathname === '/'
 
-  const handleNav = (item: (typeof navItems)[number]) => {
+  const handleNav = (item: (typeof navItems)[number], event: MouseEvent) => {
     if (item.section && isHome) {
+      event.preventDefault()
       scrollToSection(item.section)
-      return
+      window.history.replaceState(null, '', `/#${item.section}`)
     }
   }
 
@@ -73,7 +75,7 @@ export function Header() {
                 key={item.label}
                 as={RouterLink}
                 to={item.href}
-                onClick={() => handleNav(item)}
+                onClick={(event) => handleNav(item, event)}
                 px={3}
                 py={2}
                 borderRadius="md"
@@ -125,7 +127,7 @@ export function Header() {
               key={item.label}
               as={RouterLink}
               to={item.href}
-              onClick={() => handleNav(item)}
+              onClick={(event) => handleNav(item, event)}
               px={3}
               py={2}
               borderRadius="full"

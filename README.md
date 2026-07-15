@@ -70,7 +70,31 @@ add_action('rest_api_init', function () {
 npm run build
 ```
 
-Deploy the `dist/` folder to Netlify, Vercel, or Cloudflare Pages. Point `www.aurysilva.co.uk` at the React app and optionally move WordPress admin to a subdomain like `cms.aurysilva.co.uk`.
+Deploy the `dist/` folder to Netlify, Vercel, or Cloudflare Pages. SPA routing is configured via `public/_redirects` (Netlify/Cloudflare), `vercel.json` (Vercel), and `public/.htaccess` (Apache).
+
+Point `www.aurysilva.co.uk` at the React app and optionally move WordPress admin to a subdomain like `cms.aurysilva.co.uk`.
+
+### Production environment variables
+
+Set these in your hosting provider's dashboard (do not commit `.env`):
+
+```env
+VITE_WORDPRESS_URL=https://www.aurysilva.co.uk
+VITE_WORDPRESS_HOME_SLUG=aury-silva-front-end-and-email-developer
+VITE_CV_URL=https://www.aurysilva.co.uk/Software-Manager-Full-Stack-Developer-CV.pdf
+VITE_GA_MEASUREMENT_ID=G-XXXXXXXXXX
+```
+
+Rebuild after changing env vars — Vite inlines them at build time.
+
+### Google Analytics
+
+1. Create a GA4 property at [analytics.google.com](https://analytics.google.com)
+2. Copy the **Measurement ID** (`G-XXXXXXXXXX`)
+3. Add `VITE_GA_MEASUREMENT_ID=G-XXXXXXXXXX` to your production env
+4. Redeploy — page views are tracked automatically on route changes
+
+Analytics runs in production only. To test locally, set `VITE_GA_DEBUG=true` in `.env`.
 
 ## Optional env vars
 
@@ -78,6 +102,8 @@ Deploy the `dist/` folder to Netlify, Vercel, or Cloudflare Pages. Point `www.au
 VITE_WORDPRESS_URL=https://www.aurysilva.co.uk
 VITE_WORDPRESS_HOME_SLUG=aury-silva-front-end-and-email-developer
 VITE_CV_URL=          # direct link to your CV PDF for the Download CV button
+VITE_GA_MEASUREMENT_ID=G-XXXXXXXXXX
+VITE_GA_DEBUG=true    # optional: enable GA in local dev
 ```
 
 ## Project structure

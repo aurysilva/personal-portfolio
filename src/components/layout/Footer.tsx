@@ -37,12 +37,18 @@ export function Footer() {
             </Text>
           </Stack>
 
-          <Stack direction={{ base: 'column', sm: 'row' }} spacing={4} fontSize="sm">
+          <Stack direction={{ base: 'column', sm: 'row' }} spacing={4} fontSize="sm" flexWrap="wrap">
+            <Link as={RouterLink} to="/#about" color="gray.400" _hover={{ color: 'brand.300' }}>
+              About
+            </Link>
             <Link as={RouterLink} to="/portfolio" color="gray.400" _hover={{ color: 'brand.300' }}>
               Portfolio
             </Link>
             <Link as={RouterLink} to="/blog" color="gray.400" _hover={{ color: 'brand.300' }}>
               Blog
+            </Link>
+            <Link as={RouterLink} to="/#contact" color="gray.400" _hover={{ color: 'brand.300' }}>
+              Contact
             </Link>
             <Link
               as="a"
