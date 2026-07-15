@@ -5,6 +5,7 @@ import {
   Container,
   Flex,
   Heading,
+  SimpleGrid,
   Stack,
   Text,
   Wrap,
@@ -12,6 +13,7 @@ import {
 } from '@chakra-ui/react'
 import { Link as RouterLink } from 'react-router-dom'
 import { PortfolioCarousel } from '@/components/portfolio/PortfolioCarousel'
+import { PortfolioCard } from '@/components/content/PortfolioCard'
 import {
   ErrorState,
   LoadingState,
@@ -95,6 +97,7 @@ export function PortfolioSection({
               borderColor="whiteAlpha.300"
               size="lg"
               flexShrink={0}
+              display={showFilters ? 'none' : undefined}
             >
               View all →
             </Button>
@@ -119,7 +122,13 @@ export function PortfolioSection({
 
           {carousel ? (
             <PortfolioCarousel items={visibleItems} />
-          ) : null}
+          ) : (
+            <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={6}>
+              {visibleItems.map((item) => (
+                <PortfolioCard key={item.id} item={item} />
+              ))}
+            </SimpleGrid>
+          )}
         </Stack>
       </Container>
     </Box>
