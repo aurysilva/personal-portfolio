@@ -7,12 +7,13 @@ import {
 } from '@chakra-ui/react'
 import { Link as RouterLink } from 'react-router-dom'
 import { useProfile } from '@/context/ProfileContext'
-import { useSiteInfo } from '@/lib/wordpress'
+import { getWordPressUrl, useSiteInfo } from '@/lib/wordpress'
 
 export function Footer() {
   const { profile } = useProfile()
   const { data: siteInfo } = useSiteInfo()
   const year = new Date().getFullYear()
+  const wpAdminUrl = getWordPressUrl() ? `${getWordPressUrl()}/wp-admin` : undefined
 
   return (
     <Box
@@ -63,9 +64,13 @@ export function Footer() {
 
         <Text mt={8} fontSize="sm" color="gray.600" textAlign="center">
           © {year} {profile.name}. Content managed in{' '}
-          <Link href="https://www.aurysilva.co.uk/wp-admin" isExternal color="brand.400">
-            WordPress
-          </Link>
+          {wpAdminUrl ? (
+            <Link href={wpAdminUrl} isExternal color="brand.400">
+              WordPress
+            </Link>
+          ) : (
+            'WordPress'
+          )}
           .
         </Text>
       </Container>
