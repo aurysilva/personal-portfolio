@@ -36,6 +36,7 @@ export function PaginationBar({
 
       <HStack spacing={2}>
         <Button
+          type="button"
           size="sm"
           variant="outline"
           borderColor="whiteAlpha.300"
@@ -48,6 +49,7 @@ export function PaginationBar({
 
         {pages.map((pageNumber) => (
           <Button
+            type="button"
             key={pageNumber}
             size="sm"
             variant={pageNumber === page ? 'solid' : 'outline'}
@@ -63,6 +65,7 @@ export function PaginationBar({
         ))}
 
         <Button
+          type="button"
           size="sm"
           variant="outline"
           borderColor="whiteAlpha.300"

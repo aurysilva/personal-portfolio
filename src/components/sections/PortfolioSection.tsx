@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import {
   Box,
   Button,
@@ -54,6 +54,7 @@ function PaginatedPortfolioSection() {
   const [activeCategory, setActiveCategory] = useState<number | undefined>()
   const [searchParams, setSearchParams] = useSearchParams()
   const page = Math.max(1, Number.parseInt(searchParams.get('page') ?? '1', 10) || 1)
+  const previousPage = useRef(page)
   const { data: categories } = usePortfolioCategories()
   const { data, loading, error, isValidating } = usePortfolioPaginated({
     page,
@@ -83,6 +84,19 @@ function PaginatedPortfolioSection() {
     )
   }, [page, totalPages, activeCategory])
 
+  useLayoutEffect(() => {
+    if (previousPage.current === page) return
+    previousPage.current = page
+
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur()
+    }
+
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
+    document.documentElement.scrollTop = 0
+    document.body.scrollTop = 0
+  }, [page])
+
   const handleCategoryChange = (category: number | undefined) => {
     setActiveCategory(category)
     setSearchParams((current) => {
@@ -93,6 +107,10 @@ function PaginatedPortfolioSection() {
   }
 
   const handlePageChange = (nextPage: number) => {
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur()
+    }
+
     setSearchParams((current) => {
       const next = new URLSearchParams(current)
       if (nextPage <= 1) {
@@ -102,7 +120,6 @@ function PaginatedPortfolioSection() {
       }
       return next
     })
-    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   if (loading && !data) {
